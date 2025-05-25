@@ -9,7 +9,6 @@
     /* border: 1px solid #e0e0e0; */
     overflow: hidden;
 }
-
 /* --- FullCalendar Header Toolbar Styling (Keep it cohesive) --- */
 .fc .fc-toolbar {
     margin-bottom: 20px;
@@ -44,7 +43,7 @@
 
 .fc .fc-toolbar-title {
     color: #333333;
-    font-size: 2em;
+    font-size: 1.3em;
     font-weight: 600;
 }
 

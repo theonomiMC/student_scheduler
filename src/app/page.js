@@ -3,6 +3,7 @@
 
 import FullCalendar from '@fullcalendar/react';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation'
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useEffect, useState } from 'react';
@@ -12,15 +13,35 @@ import './globals.css';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
 import Header from './header';
 import EventForm from './input';
+import AuthButton from './authButton';
+
 
 export default function HomePage() {
   const [events, setEvents] = useState([]);
-  const [isPublishMode, _] = useState(false)
+  const [user, setUser] = useState(null)
+  const router = useRouter()
   const [semesters, setSemesters] = useState([])
   const [currentSemester, setCurrentSemester] = useState(1);
   const [showForm, setShowForm] = useState(false);
-  const mondayInitialDate = getMondayOfCurrentWeek()
 
+  const mondayInitialDate = getMondayOfCurrentWeek()
+  useEffect(() => {
+  // Get initial user
+  supabase.auth.getUser().then(({ data }) => {
+    setUser(data.user)
+  })
+
+  // Listen for login/logout
+  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user || null)
+  })
+
+  return () => {
+    listener.subscription.unsubscribe()
+  }
+}, [])
+
+// console.log(user)
   // 1. Get all unique semesters (already in useEffect, good!)
   useEffect(() => {
     const loadSemesters = async () => {
@@ -85,28 +106,28 @@ export default function HomePage() {
         fetchEvents(currentSemester)
       }
     }
-    const tooltipText = `Title: ${title}
-      Time: ${timeText}
+    const tooltipText = `${title}
+      ${timeText}
       Room: ${room || ''}
-      Professor: ${professor || ''}
+      Prof. ${professor || ''}
       Semester: ${currentSemester || ''}
-      ${rescheduled ? ' (RESCHEDULED)' : ''}`;
+      ${rescheduled ? ' (Rescheduled)' : ''}`;
     return (
       <div
         className={`fc-event-custom-content relative group p-2 rounded-md shadow-sm transition 
         ${rescheduled ? 'bg-yellow-100 border-l-4 border-yellow-400' : 'bg-white'}
       `}
-      title={tooltipText}
+        title={tooltipText}
       >
-        
+
         {/* ❌ Delete Button */}
-        <button
+       {user &&( <button
           onClick={handleDelete}
           className="absolute top-1 right-1 text-xs text-red-500 hover:text-red-700 bg-white rounded-full px-1 shadow opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           title="Delete"
         >
           ❌
-        </button>
+        </button>)}
 
         {timeText && (
           <div className="fc-event-time text-xs font-medium text-gray-700">
@@ -169,16 +190,18 @@ export default function HomePage() {
 
   return (
     <div className="calendar-container">
+      <AuthButton />
       <Header />
       <div style={{ flexGrow: 1, position: 'relative', marginTop: "1rem" }}>
-        <button type='button'
+        {user && <button type='button'
           onClick={() => setShowForm(prev => !prev)}
           className='py-2.5 px-6 flex items-center gap-2 text-sm max-h-max text-blue-600
            cursor-pointer font-medium text-center transition-all
            duration-500 hover:text-red-600'>
           <svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
             <path d='M1.22229 5.00011H8.77785M5.00007 8.77789V1.22233' stroke='#5551FF' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round'></path>
-          </svg> {showForm ? 'Hide Form' : 'Add Class'}</button>
+          </svg> {showForm ? 'Hide Form' : 'Add Class'}
+          </button>}
 
         <div className="border-b flex justify-end space-x-4 items-center">
           {/* <span>Semester:</span> */}
@@ -228,10 +251,10 @@ export default function HomePage() {
           allDaySlot={false}
           hiddenDays={[0]}
           timeZone="local"
-          editable={!isPublishMode}
-          selectable={!isPublishMode}
-          selectMirror={!isPublishMode}
-          eventDurationEditable={!isPublishMode}
+          editable={!!user}
+          selectable={!!user}
+          selectMirror={!!user}
+          eventDurationEditable={!!user}
           eventContent={renderEventContent}
           events={events}
           // select={handleSelect}
@@ -252,7 +275,7 @@ export default function HomePage() {
           // }}
           eventMinHeight={30}
           headerToolbar={{
-            left: !isPublishMode ? 'handleResetRescheduled' : '',
+            left: !!user ? 'handleResetRescheduled' : '',
             center: 'title',
             right: ''
 
