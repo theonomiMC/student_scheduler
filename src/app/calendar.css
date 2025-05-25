@@ -1,0 +1,249 @@
+/* --- General Calendar Container Styling --- */
+.calendar-container {
+    max-width: 980px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #ffffff; /* Clean white background for the calendar area */
+    border-radius: 10px;
+    /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); */
+    /* border: 1px solid #e0e0e0; */
+    overflow: hidden;
+}
+
+/* --- FullCalendar Header Toolbar Styling (Keep it cohesive) --- */
+.fc .fc-toolbar {
+    margin-bottom: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.fc .fc-button {
+    /* background-color: #4a67e9; A professional blue */
+    background-color: transparent;
+    border: none;
+    color: #2c3e50;
+    font-size: 0.85em;
+    padding: 8px 15px;
+    /* border-radius: 5px; */
+    transition: color 0.2s ease, transform 0.1s ease;
+}
+.fc .fc-button:hover {
+    color: #dc2626;
+    background-color: transparent;
+    /* transform: translateY(-1px); */
+}
+/* .fc .fc-button:active {
+    background-color: #2a3c9e;
+    transform: translateY(0);
+} */
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #3b50cb;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.fc .fc-toolbar-title {
+    color: #333333;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.fc .fc-col-header-cell-cushion {
+    color: #222;
+    font-weight: 500;
+    padding: 8px 0;
+    font-size: 0.95em;
+}
+
+.fc .fc-daygrid-day-number {
+    color: #888888;
+    font-size: 0.9em;
+}
+
+/* --- Event Design: Blue Left Border --- */
+
+.fc-event {
+    border-radius: 6px; 
+    padding: 3px 3px 4px 5px;
+    font-size: 0.75em;
+    line-height: 1.3;
+    overflow: hidden;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    min-height: 30px;
+    /* border: 1px solid #28a745; */
+    border: 1px solid #3b50cb;
+    background-color:#fff; 
+    color: #333; 
+}
+
+.fc-event-custom-content {
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    white-space: normal;
+    padding:0px;
+}
+
+/* Individual Content Elements (Adjust text colors to be dark on light background) */
+
+.fc-event-time {
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #555; /* Darker color for time */
+}
+
+.fc-event-title {
+    font-weight: 700;
+    font-size: 1.05em;
+    margin-bottom: 3px;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: #333; /* Darker color for title */
+}
+
+.fc-event-room,
+.fc-event-professor {
+    font-size: 0.75em;
+    color: #666; /* Even darker for details */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+}
+
+/* --- Hover Effect --- */
+.fc-event:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* --- Responsive Adjustments (Media Queries) --- */
+
+@media (max-width: 991px) {
+    .fc-event {
+        font-size: 0.8em;
+        padding: 3px 5px 3px 9px; /* Adjust left padding for smaller screens */
+    }
+    .fc-event-title {
+        -webkit-line-clamp: 1;
+        font-size: 0.95em;
+    }
+    .fc-event-room,
+    .fc-event-professor {
+        font-size: 0.7em;
+    }
+}
+
+@media (max-width: 767px) {
+    .calendar-container {
+        padding: 10px;
+        margin: 10px auto;
+        border-radius: 5px;
+        box-shadow: none;
+        border: none;
+    }
+    .fc-event {
+        font-size: 0.7em;
+        padding: 2px 4px 2px 8px; /* Further adjust left padding */
+        box-shadow: none;
+        border-radius: 4px;
+        border-left-width: 3px; /* Slightly thinner border on mobile */
+    }
+    .fc-event-time {
+        font-size: 0.8em;
+    }
+    .fc-event-title {
+        font-size: 0.85em;
+        -webkit-line-clamp: 1;
+    }
+
+    .fc-event-room,
+    .fc-event-professor {
+        display: none;
+    }
+
+    /* Header toolbar adjustments remain the same */
+    .fc .fc-toolbar {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .fc .fc-toolbar-chunk:not(:last-child) {
+        margin-bottom: 8px;
+    }
+    .fc .fc-button-group {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 5px;
+    }
+    .fc .fc-button {
+        margin: 2px;
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+    .fc .fc-toolbar-title {
+        font-size: 1.4em;
+        margin-bottom: 8px;
+    }
+    .fc .fc-col-header-cell-cushion {
+        font-size: 0.8em;
+    }
+}
+
+/* Adjustments for DayGridMonth view events (very compact) */
+.fc-daygrid-event {
+    margin-bottom: 1px;
+    border-radius: 3px;
+    padding: 1px 3px 1px 6px; /* Adjust padding for left border in month view */
+    font-size: 0.7em;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-align: left;
+    border-left-width: 3px; /* Thinner border for month view */
+}
+
+.fc-daygrid-event .fc-event-time,
+.fc-daygrid-event .fc-event-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.fc-daygrid-event .fc-event-room,
+.fc-daygrid-event .fc-event-professor {
+    display: none;
+}
+/* Darken time labels on the left side */
+.fc .fc-timegrid-slot-label {
+  color: #1f2937;  /* Tailwind's gray-800 */
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+/* Highlight the current day column */
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: #f0f9ff;
+  box-shadow: inset 0 0 0 1px #e0f2fe; /* subtle blue border */
+}
