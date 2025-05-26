@@ -1,3 +1,6 @@
+import Footer from "./footer";
+import Header from "./header";
+
 export const metadata = {
   title: 'Student Schedule | East-West University',
   description: 'Descover university class schedule for semester I-VI, class locations, professors, time',
@@ -12,8 +15,10 @@ export default function Layout({ children }) {
  
   return (
     <html lang="en">
-      <body>    
+      <body>
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

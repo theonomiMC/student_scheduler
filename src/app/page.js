@@ -198,7 +198,7 @@ export default function HomePage() {
   return (
     <div className="calendar-container">
       <AuthButton />
-      <Header />
+      {/* <Header /> */}
       <div style={{ flexGrow: 1, position: 'relative', marginTop: "1rem" }}>
         {user && <button type='button'
           onClick={() => setShowForm(prev => !prev)}
