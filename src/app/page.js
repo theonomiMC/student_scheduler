@@ -82,7 +82,6 @@ export default function HomePage() {
     }
   }, [currentSemester]);
   const handleEventSaved = () => {
-
     fetchEvents(currentSemester);
     setShowForm(false);
     setSelectedEvent(null)
@@ -117,7 +116,7 @@ export default function HomePage() {
     return (
       <div
         className={`fc-event-custom-content relative group p-2
-           rounded-md shadow-sm transition 
+           rounded-md shadow-sm transition sm:text-sm text-[10px]
         ${rescheduled ? 'bg-brand-yellow' : 'bg-white'}
       `}
         title={tooltipText}
@@ -148,11 +147,11 @@ export default function HomePage() {
         {room && (
           <div className="fc-event-room text-xs text-gray-600">{!rescheduled && "Rm:"} {room}</div>
         )}
-        {professor && (
+        {/* {professor && (
           <div className="fc-event-professor text-xs text-gray-500 italic">
             {!rescheduled && professor}
           </div>
-        )}
+        )} */}
         {/* {rescheduled && (
           <div className="text-[10px] mt-1 font-bold text-blue-700">
             Rescheduled
@@ -264,6 +263,7 @@ export default function HomePage() {
           eventDurationEditable={!!user}
           eventContent={renderEventContent}
           events={events}
+          
           // select={handleSelect}
           eventDrop={async (info) => {
             await handleEventDrop(info);         // Make sure your handleEventDrop accepts `info`

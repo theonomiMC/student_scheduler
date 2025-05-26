@@ -78,7 +78,8 @@
     /* border: 1px solid #28a745; */
     border: 1px solid #3b50cb;
     background-color:#fff; 
-    color: #333; 
+    color: #333;
+    white-space: normal;
 }
 
 .fc-event-custom-content {
@@ -98,9 +99,9 @@
     font-weight: 600;
     font-size: 0.9em;
     margin-bottom: 2px;
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis; */
     color: #555; /* Darker color for time */
 }
 
