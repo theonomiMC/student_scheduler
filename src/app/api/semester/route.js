@@ -52,7 +52,7 @@ export const handleEventDrop = async (info) => {
 
 export async function insertEvent(newEvent) {
   const { data, error } = await supabase
-    .from('schedule') // <-- use the correct table name
+    .from('schedule')
     .insert([newEvent]);
 
   if (error) {
@@ -93,4 +93,13 @@ export async function deleteEvent(id) {
 
   console.log('Event deleted!', data);
   return { data };
+}
+export async function updateEvent(id, updates) {
+  const { data, error } = await supabase
+    .from('schedule')
+    .update(updates)
+    .eq('id', id);
+
+  if (error) throw new Error(error.message);
+  return data;
 }

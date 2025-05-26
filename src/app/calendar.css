@@ -9,7 +9,7 @@
     /* border: 1px solid #e0e0e0; */
     overflow: hidden;
 }
-/* --- FullCalendar Header Toolbar Styling (Keep it cohesive) --- */
+
 .fc .fc-toolbar {
     margin-bottom: 20px;
     padding: 10px 0;
@@ -42,7 +42,7 @@
 }
 
 .fc .fc-toolbar-title {
-    color: #333333;
+    color: #0b365a;
     font-size: 1.3em;
     font-weight: 600;
 }
@@ -63,7 +63,7 @@
 
 .fc-event {
     border-radius: 6px; 
-    padding: 3px 3px 4px 5px;
+    padding: 3px 4px!important;
     font-size: 0.75em;
     line-height: 1.3;
     overflow: hidden;
@@ -106,11 +106,11 @@
 
 .fc-event-title {
     font-weight: 700;
-    font-size: 1.05em;
+    font-size: 0.89em!important;
     margin-bottom: 3px;
     white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis!important;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -120,7 +120,7 @@
 .fc-event-room,
 .fc-event-professor {
     font-size: 0.75em;
-    color: #666; /* Even darker for details */
+    color: #001789!important; /* Even darker for details */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -246,3 +246,12 @@
   background-color: #f0f9ff;
   box-shadow: inset 0 0 0 1px #e0f2fe; /* subtle blue border */
 }
+
+/* .fc-timegrid-event-harness-inset .fc-timegrid-event,
+.fc-timegrid-event.fc-event-mirror,
+.fc-timegrid-more-link {
+  background-color: #fed500 !important; 
+  color: #0057b7 !important;           
+  font-weight: bold;
+  border: none;
+} */

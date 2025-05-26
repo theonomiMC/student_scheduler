@@ -23,6 +23,7 @@ export default function LoginPage() {
   return (
     <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
       <h2 className="text-xl font-bold mb-4">Admin Login</h2>
+    
       <input
         type="email"
         placeholder="Email"
@@ -37,7 +38,7 @@ export default function LoginPage() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <button onClick={handleLogin} type='submit' className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         Login
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
