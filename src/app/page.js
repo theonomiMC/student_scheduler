@@ -266,20 +266,9 @@ export default function HomePage() {
           
           // select={handleSelect}
           eventDrop={async (info) => {
-            await handleEventDrop(info);         // Make sure your handleEventDrop accepts `info`
-            fetchEvents(currentSemester);        // Re-fetch updated events
+            await handleEventDrop(info);
+            fetchEvents(currentSemester);
           }}
-          // eventResize={async (info) => {
-          //   const updated = {
-          //     end: info.event.end.toISOString().slice(0, 5)
-          //   };
-
-          //   const { error } = await updateEvent(info.event.id, updated);
-          //   if (error) {
-          //     alert('Failed to resize event.');
-          //     info.revert();
-          //   }
-          // }}
           eventMinHeight={30}
           headerToolbar={{
             left: !!user ? 'handleResetRescheduled' : '',

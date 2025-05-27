@@ -21,7 +21,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4">Admin Login</h2>
     
       <input
@@ -42,6 +43,7 @@ export default function LoginPage() {
         Login
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
+    </div>
     </div>
   )
 }
