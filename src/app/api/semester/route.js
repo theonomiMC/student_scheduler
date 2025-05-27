@@ -3,37 +3,42 @@ import { supabase } from '@/lib/supabaseClient';
 import { getIsoStringForWeekday } from '@/utils/helper';
 
 export async function getSemester(num) {
-  const { data, error } = await supabase.from('schedule').select('*').eq('semester',num);
+  const { data, error } = await supabase.from('schedule').select('*').eq('semester', num);
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 
-  return data.map(event=>({
-    id:event.id,
-    title:event.title,
-    start:getIsoStringForWeekday(event.day_of_week, event.start),
-    end:getIsoStringForWeekday(event.day_of_week, event.end),
-    extendedProps:{
-      professor:event.professor,
-      room:event.room,
-      status:event.status,
-      rescheduled:event.rescheduled
+  return data.map(event => ({
+    id: event.id,
+    title: event.title,
+    start: getIsoStringForWeekday(event.day_of_week, event.start),
+    end: getIsoStringForWeekday(event.day_of_week, event.end),
+    extendedProps: {
+      professor: event.professor,
+      room: event.room,
+      status: event.status,
+      rescheduled: event.rescheduled
     }
   }));
 }
 
 export const handleEventDrop = async (info) => {
   const event = info.event;
+  const oldEvent = info.oldEvent
   const rescheduled = confirm('Is this a rescheduled class?');
+  console.log('old event', oldEvent.start, oldEvent.day_of_week)
   // Format values for Supabase
   const updated = {
     start: event.start.toTimeString().slice(0, 5), // "HH:MM"
     end: event.end.toTimeString().slice(0, 5),
-    day_of_week: event.start.getDay() === 0 ? 7 : event.start.getDay(), // Sunday as 7
+    day_of_week: event.start.getDay() === 0 ? 7 : event.start.getDay(),
+    rs_start: oldEvent.start.toTimeString().slice(0, 5) || null,
+    rs_end: oldEvent.end.toTimeString().slice(0, 5) || null,
+    rs_day: oldEvent.start.getDay() === 0 ? 7 : oldEvent.start.getDay() || null,
     rescheduled
   };
-
+  console.log('updaeted', updated)
   // Call Supabase update
   const { data, error } = await supabase
     .from('schedule') // ✅ Make sure this matches your table name
@@ -65,41 +70,61 @@ export async function insertEvent(newEvent) {
 }
 
 export async function resetRescheduledEvents() {
-  const { data, error } = await supabase
+  const { data: events, error: fetchError } = await supabase
     .from('schedule')
-    .update({ rescheduled: false })
+    .select('id, rs_start, rs_end, rs_day, rs_room')
     .eq('rescheduled', true);
 
-  if (error) {
-    console.error('Reset error:', error.message);
-    return { error };
+  if (fetchError) {
+    console.error('Fetch error:', fetchError.message);
+    return { error: fetchError };
+  }
+
+  for (const event of events) {
+    const { id, rs_start, rs_end, rs_day, rs_room } = event;
+
+    const { error: updateError } = await supabase
+      .from('schedule')
+      .update({
+        start: rs_start,
+        end: rs_end,
+        day_of_week: rs_day,
+        room: rs_room,
+        rescheduled: false
+      })
+      .eq('id', id);
+
+    if (updateError) {
+      console.error(`Update failed for ID ${id}:`, updateError.message);
+    }
   }
 
   console.log('Rescheduled events reset.');
-  return { data };
+  return { success: true };
 }
 
 
-export async function deleteEvent(id) {
-  const { data, error } = await supabase
-    .from('schedule')
-    .delete()
-    .eq('id', id);
 
-  if (error) {
-    console.error('Delete error:', error.message);
-    return { error };
+  export async function deleteEvent(id) {
+    const { data, error } = await supabase
+      .from('schedule')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Delete error:', error.message);
+      return { error };
+    }
+
+    console.log('Event deleted!', data);
+    return { data };
   }
+  export async function updateEvent(id, updates) {
+    const { data, error } = await supabase
+      .from('schedule')
+      .update(updates)
+      .eq('id', id);
 
-  console.log('Event deleted!', data);
-  return { data };
-}
-export async function updateEvent(id, updates) {
-  const { data, error } = await supabase
-    .from('schedule')
-    .update(updates)
-    .eq('id', id);
-
-  if (error) throw new Error(error.message);
-  return data;
-}
+    if (error) throw new Error(error.message);
+    return data;
+  }
