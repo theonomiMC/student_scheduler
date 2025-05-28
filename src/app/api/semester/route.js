@@ -1,4 +1,3 @@
-// app/api/semester/route.js
 import { supabase } from '@/lib/supabaseClient';
 import { getIsoStringForWeekday } from '@/utils/helper';
 
@@ -27,7 +26,7 @@ export const handleEventDrop = async (info) => {
   const event = info.event;
   const oldEvent = info.oldEvent
   const rescheduled = confirm('Reschedule this class?');
-  // console.log('old event', oldEvent.start, oldEvent.day_of_week)
+
   // Format values for Supabase
   const updated = {
     start: event?.start ? event.start.toTimeString().slice(0, 5) : null,
@@ -39,7 +38,6 @@ export const handleEventDrop = async (info) => {
     rs_room:oldEvent?.extendedProps?.room || null,
     rescheduled
   };
-  // console.log('updaeted', updated)
   // Call Supabase update
   const { data, error } = await supabase
     .from('schedule')
@@ -52,7 +50,7 @@ export const handleEventDrop = async (info) => {
     info.revert();
     alert('Failed to update schedule.');
   } else {
-    console.log('Update successful');
+    console.log('Updated successful');
   }
 };
 
@@ -66,7 +64,7 @@ export async function insertEvent(newEvent) {
     return { error };
   }
 
-  console.log('Event inserted successfully:', data);
+  console.log('Event inserted successfully');
   return { data };
 }
 

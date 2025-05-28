@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-6 mt-12">
-      <div className="max-w-4xl mx-auto text-[10px]  px-4 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
+      <div className="max-w-4xl mx-auto  px-4 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
         <p>&copy; {new Date().getFullYear()} Scheduler App</p>
         <div className="flex items-center gap-4 mt-2 sm:mt-0">
           <a 

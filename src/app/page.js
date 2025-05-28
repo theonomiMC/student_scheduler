@@ -9,13 +9,11 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useEffect, useState } from 'react';
 import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent } from './api/semester/route';
-import './calendar.css'
-import './globals.css';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
-import Header from './header';
 import EventForm from './input';
 import AuthButton from './authButton';
-
+import './calendar.css'
+import './globals.css';
 
 export default function HomePage() {
   const [events, setEvents] = useState([]);
@@ -43,8 +41,6 @@ export default function HomePage() {
     }
   }, [])
 
-  // console.log(user)
-  // 1. Get all unique semesters (already in useEffect, good!)
   useEffect(() => {
     const loadSemesters = async () => {
       const { data, error } = await supabase
@@ -56,7 +52,6 @@ export default function HomePage() {
       }
       const uniqueSemesters = [...new Set(data.map(item => item.semester))].sort();
       setSemesters(uniqueSemesters);
-      // Optional: Set current semester to the first available if not already set
       if (uniqueSemesters.length > 0 && !currentSemester) {
         setCurrentSemester(uniqueSemesters[0]);
       }
@@ -65,9 +60,7 @@ export default function HomePage() {
     loadSemesters();
   }, []);
 
-  // 2. Define fetchEvents within the component 
   const fetchEvents = async (semesterId) => { 
-    console.log(`Workspaceing events for semester: ${semesterId}`);
     try {
       const eventsData = await getSemester(semesterId);
       setEvents(eventsData);
@@ -75,10 +68,7 @@ export default function HomePage() {
       console.error("Error fetching events:", error);
     }
   };
-
-  // 3. Use useEffect to trigger fetchEvents when currentSemester changes
   useEffect(() => {
-    // Only fetch if currentSemester is valid
     if (currentSemester) {
       fetchEvents(currentSemester);
     }
@@ -149,42 +139,10 @@ export default function HomePage() {
         {room && (
           <div className="fc-event-room text-xs text-gray-600">{!rescheduled && "Rm:"} {room}</div>
         )}
-        {/* {professor && (
-          <div className="fc-event-professor text-xs text-gray-500 italic">
-            {!rescheduled && professor}
-          </div>
-        )} */}
-        {/* {rescheduled && (
-          <div className="text-[10px] mt-1 font-bold text-blue-700">
-            Rescheduled
-          </div>
-        )} */}
       </div>
-
     )
   };
-  // const handleSelect = async (info) => {
-  //   const title = prompt('Enter event title:');
-  //   const room = prompt('Enter event location:');
-  //   const rescheduled = confirm('Is this a rescheduled class?');
 
-  //   const newEvent = {
-  //     title,
-  //     start: info.startStr.slice(11, 16), // "HH:MM"
-  //     end: info.endStr.slice(11, 16),
-  //     day_of_week: new Date(info.startStr).getDay() || 7,
-  //     room,
-  //     semester: currentSemester,
-  //     rescheduled
-  //   };
-
-  //   const { error } = await insertEvent(newEvent);
-  //   fetchEvents()
-  //   if (!error) {
-  //     const updated = await getSemester(currentSemester);
-  //     setEvents(updated);
-  //   }
-  // };
   const handleResetRescheduled = async () => {
     const confirmed = confirm('Reset all rescheduled events?');
     if (!confirmed) return;
@@ -200,7 +158,6 @@ export default function HomePage() {
   return (
     <div className="calendar-container">
       <AuthButton />
-      {/* <Header /> */}
       <div style={{ flexGrow: 1, position: 'relative', marginTop: "1rem" }}>
         {user && <button type='button'
           onClick={() => setShowForm(prev => !prev)}
@@ -225,7 +182,7 @@ export default function HomePage() {
                   duration-500 hover:text-red-600
           ${isActive
                     ? 'text-red-600'
-                    : 'text-slate-700'//bg-blue-600 hover:bg-blue-700 text-white
+                    : 'text-slate-700'
                   }`}
               >
                 {sem}
@@ -240,11 +197,10 @@ export default function HomePage() {
           <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
             onTransitionEnd={(e) => {
               if (!showForm && e.propertyName === 'max-height') {
-                // Ensure the div truly has no height after transition if hidden
                 e.currentTarget.style.height = '0px';
               }
             }}
-          > {/* Added margin for spacing */}
+          >
             <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent}/>
           </div>
         )}
@@ -264,8 +220,7 @@ export default function HomePage() {
           selectMirror={!!user}
           eventDurationEditable={!!user}
           eventContent={renderEventContent}
-          events={events}
-          
+          events={events}   
           // select={handleSelect}
           eventDrop={async (info) => {
             await handleEventDrop(info);

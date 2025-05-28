@@ -15,7 +15,6 @@ export default function EventForm({ onSave, semester, existingEvent }) {
     useEffect(() => {
         if (existingEvent) {
             setFormData((prev)=>({...prev,  
-                // day_of_week:new Date(existingEvent.start).getDay() || 1,
                 title: existingEvent?.title || "",
                 room: existingEvent.extendedProps?.room || "",
                 professor: existingEvent.extendedProps?.professor || "",
@@ -75,8 +74,8 @@ export default function EventForm({ onSave, semester, existingEvent }) {
             professor: "",
             rescheduled: false
         });
-        if (onSave) { // Check if onSave prop was provided
-            onSave(); // Call it after successful save
+        if (onSave) {
+            onSave();
         }
     };
 

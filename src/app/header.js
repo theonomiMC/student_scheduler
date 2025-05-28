@@ -10,7 +10,7 @@ export default function Header() {
             <div style={{ position: 'relative', width: '330px', height: '80px' }}>
             <Link href={"/"}>
             <Image
-                src="/logo_2.png"
+                src="/logo.webp"
                 alt="University Logo"
                 style={{ objectFit: 'contain' }}
                 fill
