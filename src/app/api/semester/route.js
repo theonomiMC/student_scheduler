@@ -26,29 +26,29 @@ export async function getSemester(num) {
 export const handleEventDrop = async (info) => {
   const event = info.event;
   const oldEvent = info.oldEvent
-  const rescheduled = confirm('Is this a rescheduled class?');
-  console.log('old event', oldEvent.start, oldEvent.day_of_week)
+  const rescheduled = confirm('Reschedule this class?');
+  // console.log('old event', oldEvent.start, oldEvent.day_of_week)
   // Format values for Supabase
   const updated = {
-    start: event.start.toTimeString().slice(0, 5), // "HH:MM"
-    end: event.end.toTimeString().slice(0, 5),
-    day_of_week: event.start.getDay() === 0 ? 7 : event.start.getDay(),
-    rs_start: oldEvent.start.toTimeString().slice(0, 5) || null,
-    rs_end: oldEvent.end.toTimeString().slice(0, 5) || null,
-    rs_day: oldEvent.start.getDay() === 0 ? 7 : oldEvent.start.getDay() || null,
+    start: event?.start ? event.start.toTimeString().slice(0, 5) : null,
+    end: event?.start ? event.end.toTimeString().slice(0, 5) : null,
+    day_of_week: event?.start ? (event.start.getDay() === 0 ? 7 : event.start.getDay()) : null,
+    rs_start: oldEvent?.start.toTimeString().slice(0, 5) || null,
+    rs_end: oldEvent?.end.toTimeString().slice(0, 5) || null,
+    rs_day: oldEvent?.start.getDay() === 0 ? 7 : oldEvent.start.getDay() || null,
     rescheduled
   };
   console.log('updaeted', updated)
   // Call Supabase update
   const { data, error } = await supabase
-    .from('schedule') // ✅ Make sure this matches your table name
+    .from('schedule')
     .update(updated)
     .eq('id', event.id)
     .select();
 
   if (error) {
     console.error('Update failed:', error.message);
-    info.revert(); // revert drag if update fails
+    info.revert();
     alert('Failed to update schedule.');
   } else {
     console.log('Update successful:', data);
