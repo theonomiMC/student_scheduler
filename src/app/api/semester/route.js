@@ -9,11 +9,11 @@ export async function getSemester(num) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 
-  return data.map(event => ({
+  return data.filter(event => event.start && event.end).map(event => ({
     id: event.id,
-    title: event.title,
-    start: getIsoStringForWeekday(event.day_of_week, event.start),
-    end: getIsoStringForWeekday(event.day_of_week, event.end),
+    title: event?.title ,
+    start: getIsoStringForWeekday(event?.day_of_week, event?.start),
+    end: getIsoStringForWeekday(event?.day_of_week, event?.end),
     extendedProps: {
       professor: event.professor,
       room: event.room,
