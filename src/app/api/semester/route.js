@@ -36,7 +36,7 @@ export const handleEventDrop = async (info) => {
     rs_start: oldEvent?.start.toTimeString().slice(0, 5) || null,
     rs_end: oldEvent?.end.toTimeString().slice(0, 5) || null,
     rs_day: oldEvent?.start.getDay() === 0 ? 7 : oldEvent.start.getDay() || null,
-    rs_room:oldEvent?.room || null,
+    rs_room:oldEvent?.extendedProps?.room || null,
     rescheduled
   };
   // console.log('updaeted', updated)
