@@ -1,6 +1,6 @@
 'use client';
-
 import Link from "next/link";
+import Image from 'next/image';
 
 export default function Header() {
     return (
@@ -8,11 +8,11 @@ export default function Header() {
         <div className="py-6 flex flex-col items-center text-center space-y-2">
             {/* Logo */}
             <Link href={"/"}>
-            <img
+            <Image
                 src="/logo_2.png"
                 alt="University Logo"
-                className="h-20 w-auto"
-            // style={{ filter: 'brightness(0) saturate(100%) invert(14%) sepia(46%) saturate(456%) hue-rotate(165deg) brightness(97%) contrast(95%)' }}
+                 height={80}
+                 width={auto}
             />
             </Link>
 
