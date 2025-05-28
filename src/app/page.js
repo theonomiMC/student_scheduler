@@ -1,7 +1,9 @@
 // app/page.js or any component
 'use client';
-
-import FullCalendar from '@fullcalendar/react';
+import dynamic from 'next/dynamic';
+const FullCalendar = dynamic(() => import('@fullcalendar/react'), {
+  ssr: false,
+});
 import { supabase } from '@/lib/supabaseClient';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
