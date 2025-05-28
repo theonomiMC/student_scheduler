@@ -7,15 +7,16 @@ export default function Header() {
 
         <div className="py-6 flex flex-col items-center text-center space-y-2">
             {/* Logo */}
+            <div style={{ position: 'relative', width: '330px', height: '80px' }}>
             <Link href={"/"}>
             <Image
                 src="/logo_2.png"
                 alt="University Logo"
-                 height={80}
-                 width={auto}
+                style={{ objectFit: 'contain' }}
+                fill
             />
             </Link>
-
+            </div>
             {/* Subheading */}
             <h2 className="text-lg sm:text-xl font-light text-gray-600 tracking-wide">
                 Student Class Schedule
