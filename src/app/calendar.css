@@ -137,7 +137,11 @@
     transform: translateY(-2px);
 }
 
-
+.fc-v-event {
+    background-color: none!important;
+    border:none!important;
+    display: block;
+}
 @media (max-width: 991px) {
     .fc-event {
         font-size: 0.8em;
