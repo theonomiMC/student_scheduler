@@ -97,7 +97,7 @@
     justify-content: center;
     overflow: hidden;
     white-space: normal;
-    padding: 0px;
+    padding-left: 4px;
 }
 
 .fc-event-time {
