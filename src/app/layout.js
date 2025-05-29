@@ -1,5 +1,6 @@
 import Footer from "./footer";
 import Header from "./header";
+import './globals.css';
 
 export const metadata = {
   title: 'Student Schedule | East-West University',
