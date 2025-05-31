@@ -140,9 +140,9 @@ export default function EventForm({ onSave, semester, existingEvent }) {
                 <button
                     type="submit"
                     className="
-                            w-full max-w-[150px]
+                            w-full max-w-[180px]
                             bg-blue-800 text-white
-                            bg-transparent
+                            
                             py-2 px-4 rounded
                             hover:shadow-md
                             font-medium transition"
