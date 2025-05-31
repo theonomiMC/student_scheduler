@@ -23,26 +23,25 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
     <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Admin Login</h2>
-    
+      <h2 className="text-xl font-bold mb-4 text-gray-900">Admin Login</h2>
       <input
         type="email"
         placeholder="Email"
-        className="w-full p-2 border mb-2"
+        className="w-full p-2 border mb-2 outline-none"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
         type="password"
         placeholder="Password"
-        className="w-full p-2 border mb-4"
+        className="w-full p-2 border mb-4 outline-none"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin} type='submit' className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <button onClick={handleLogin} type='submit' className="bg-gray-100 text-gray-900 px-4 py-2 rounded hover:shadow-md">
         Login
       </button>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-red-600 mt-2">{error}</p>}
     </div>
     </div>
   )

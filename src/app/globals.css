@@ -29,5 +29,5 @@ body {
 
 /* Style for readOnly inputs (optional, as they aren't 'disabled' by the browser) */
 .input:read-only {
-  @apply bg-green-200 bg-opacity-25 border-blue-100 text-gray-600 cursor-default;
+  @apply bg-white border-blue-100 text-gray-600 cursor-default;
 }

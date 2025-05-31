@@ -34,7 +34,7 @@ export default function AuthButton() {
   }
 
   return (
-    <div className="absolute top-8 right-4">
+    <div className="absolute top-9 right-4">
       {user ? (
         <button
           onClick={handleLogout}
@@ -46,9 +46,11 @@ export default function AuthButton() {
       ) : (
         <button
           onClick={handleLogin}
-          className="text-sm px-4 py-2 rounded bg-blue-800 text-white hover:bg-blue-700"
+          className="p-2 border-none rounded-xl bg-transparent hover:bg-gray-100 transition"
         >
-          Login
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={0.8} stroke="#111827" className="size-8 text-[#111827]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
         </button>
       )}
     </div>

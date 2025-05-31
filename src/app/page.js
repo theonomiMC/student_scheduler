@@ -60,7 +60,7 @@ export default function HomePage() {
     loadSemesters();
   }, []);
 
-  const fetchEvents = async (semesterId) => { 
+  const fetchEvents = async (semesterId) => {
     try {
       const eventsData = await getSemester(semesterId);
       setEvents(eventsData);
@@ -73,6 +73,7 @@ export default function HomePage() {
       fetchEvents(currentSemester);
     }
   }, [currentSemester]);
+
   const handleEventSaved = () => {
     fetchEvents(currentSemester);
     setShowForm(false);
@@ -84,6 +85,7 @@ export default function HomePage() {
 
     const { id, title, extendedProps } = event;
     const { room, professor, rescheduled } = extendedProps || {};
+
     const handleDelete = async () => {
       const confirmed = confirm('Delete this event?');
       if (!confirmed) return;
@@ -91,13 +93,15 @@ export default function HomePage() {
       const result = await deleteEvent(id);
       if (!result.error) {
         setEvents((prev) => [...prev.filter((e) => e.id !== id)]);
+        setSelectedEvent(null)
+        setShowForm(false);
         fetchEvents(currentSemester)
       }
     }
     const handleEdit = () => {
       // console.log(event.start, event.end,'selected to edit')
-      setSelectedEvent(event); 
-      setShowForm(true); 
+      setSelectedEvent(event);
+      setShowForm(true);
     };
     const tooltipText = `${title}
       ${timeText}
@@ -173,6 +177,7 @@ export default function HomePage() {
           <span className="text-lg">🎓: </span>
           {semesters && semesters.map((sem, idx) => {
             const isActive = currentSemester === sem;
+            const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
             return (
               <button
                 key={idx}
@@ -185,7 +190,7 @@ export default function HomePage() {
                     : 'text-slate-700'
                   }`}
               >
-                {sem}
+                {ROMAN_NUMERALS[sem-1]}
               </button>
             );
           })}
@@ -201,7 +206,7 @@ export default function HomePage() {
               }
             }}
           >
-            <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent}/>
+            <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
           </div>
         )}
 
@@ -220,7 +225,7 @@ export default function HomePage() {
           selectMirror={!!user}
           eventDurationEditable={!!user}
           eventContent={renderEventContent}
-          events={events}   
+          events={events}
           // select={handleSelect}
           eventDrop={async (info) => {
             await handleEventDrop(info);
@@ -235,7 +240,7 @@ export default function HomePage() {
           }}
           customButtons={{
             handleResetRescheduled: {
-              text: 'Reset Schedule',
+              text: 'RESET',
               click: handleResetRescheduled,
             },
 

@@ -7,16 +7,20 @@ export default function Header() {
 
         <div className="py-6 flex flex-col items-center text-center space-y-2">
             {/* Logo */}
-            <div style={{ position: 'relative', width: '330px', height: '80px' }}>
+
             <Link href={"/"}>
-            <Image
-                src="/logo.webp"
-                alt="University Logo"
-                style={{ objectFit: 'contain' }}
-                fill
-            />
+                <div className="w-full max-w-[300px] hidden sm:block">
+                    <Image
+                        src="/logo.webp"
+                        alt="University Logo"
+                        className="w-full h-auto object-contain mb-2"
+                        width={300}
+                        height={50}
+                        priority
+                    />
+                </div>
+                <h1 className="font-extrabold text-blue-950 m-0 sm:hidden">EAST - WEST UNIVERSITY</h1>
             </Link>
-            </div>
             {/* Subheading */}
             <h2 className="text-lg sm:text-xl font-light text-gray-600 tracking-wide">
                 Student Class Schedule
