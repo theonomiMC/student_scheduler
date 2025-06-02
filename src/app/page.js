@@ -274,6 +274,7 @@ useEffect(() => {
           allDaySlot={false}
           hiddenDays={[0]}
           timeZone="local"
+          nowIndicator={true}
           editable={!!user}
           selectable={!!user}
           selectMirror={!!user}
