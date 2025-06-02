@@ -7,7 +7,7 @@ const FullCalendar = dynamic(() => import('@fullcalendar/react'), {
 import { supabase } from '@/lib/supabaseClient';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent } from './api/semester/route';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
 import EventForm from './input';
@@ -25,8 +25,53 @@ export default function HomePage() {
   const [semesters, setSemesters] = useState([])
   const [currentSemester, setCurrentSemester] = useState(1);
   const [showForm, setShowForm] = useState(false);
+  const [semesterIndex, setSemesterIndex] = useState(0);
 
   const mondayInitialDate = getMondayOfCurrentWeek()
+  const allSemesters = [1, 2, 3, 4, 5, 6];
+
+  const intervalRef = useRef(null);
+  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
+
+  // --- NEW: Autoplay Semester Logic ---
+  useEffect(() => {
+    // Set the initial currentSemester from the array
+    setCurrentSemester(allSemesters[semesterIndex]);
+
+    const startAutoplay = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = setInterval(() => {
+        setSemesterIndex(prevIndex => {
+          const nextIndex = (prevIndex + 1) % allSemesters.length;
+          return nextIndex;
+        });
+      }, 5000); // Change semester every 5 seconds (5000 milliseconds)
+    };
+
+    const stopAutoplay = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+
+    if (!isAutoplayPaused) {
+      startAutoplay();
+    } else {
+      stopAutoplay();
+    }
+
+    // Clean up interval on component unmount
+    return () => stopAutoplay();
+  }, [semesterIndex, semesters, allSemesters, isAutoplayPaused]); // Added isAutoplayPaused to dependencies
+
+  useEffect(() => {
+    // Update currentSemester state when semesterIndex changes
+    setCurrentSemester(allSemesters[semesterIndex]);
+  }, [semesterIndex, allSemesters]);
+
+
   useEffect(() => {
     // Get initial user
     supabase.auth.getUser().then(({ data }) => {
@@ -43,35 +88,35 @@ export default function HomePage() {
     }
   }, [])
   const fetchEvents = useCallback(async (semesterId) => {
-  try {
-    const eventsData = await getSemester(semesterId);
-    setEvents(eventsData);
-  } catch (error) {
-    console.error("Error fetching events:", error);
-  }
-}, []);
-// useEffect(() => {
-//   if (!user) return;
+    try {
+      const eventsData = await getSemester(semesterId);
+      setEvents(eventsData);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  }, []);
+  // useEffect(() => {
+  //   if (!user) return;
 
-//   const channel = supabase
-//     .channel('schedule-changes-${user?.id}-${currentSemester}')
-//     .on(
-//       'postgres_changes',
-//       {
-//         event: '*',
-//         schema: 'public',
-//         table: 'schedule',
-//       },
-//       (payload) => {
-//         fetchEvents(currentSemester);
-//       }
-//     )
-//     .subscribe();
+  //   const channel = supabase
+  //     .channel('schedule-changes-${user?.id}-${currentSemester}')
+  //     .on(
+  //       'postgres_changes',
+  //       {
+  //         event: '*',
+  //         schema: 'public',
+  //         table: 'schedule',
+  //       },
+  //       (payload) => {
+  //         fetchEvents(currentSemester);
+  //       }
+  //     )
+  //     .subscribe();
 
-//   return () => {
-//     supabase.removeChannel(channel);
-//   };
-// }, [user, currentSemester,fetchEvents]);
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, [user, currentSemester,fetchEvents]);
 
   useEffect(() => {
     const loadSemesters = async () => {
@@ -105,23 +150,23 @@ export default function HomePage() {
       fetchEvents(currentSemester);
     }
   }, [currentSemester]);
-useEffect(() => {
-  let interval;
+  useEffect(() => {
+    let interval;
 
-  const startPolling = () => {
-    if (interval) clearInterval(interval);
-    interval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        fetchEvents(currentSemester);
-      }
-    }, 15000); // every 15 seconds
-  };
+    const startPolling = () => {
+      if (interval) clearInterval(interval);
+      interval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          fetchEvents(currentSemester);
+        }
+      }, 15000); // every 15 seconds
+    };
 
-  startPolling();
+    startPolling();
 
-  // Clear interval on unmount
-  return () => clearInterval(interval);
-}, [currentSemester, fetchEvents]);
+    // Clear interval on unmount
+    return () => clearInterval(interval);
+  }, [currentSemester, fetchEvents]);
 
 
 
@@ -214,9 +259,12 @@ useEffect(() => {
   };
 
   return (
-    <div className="calendar-container">
+    <div className="calendar-container flex flex-col h-screen"
+    >
+
       <AuthButton />
-      <div style={{ flexGrow: 1, position: 'relative', marginTop: "1rem" }}>
+      <div style={{ flexGrow: 1, position: 'relative' }}>
+
         {user && <button type='button'
           onClick={() => setShowForm(prev => !prev)}
           className='py-2.5 px-6 flex items-center gap-2 text-sm max-h-max text-blue-800
@@ -227,7 +275,7 @@ useEffect(() => {
           </svg> {showForm ? 'Hide Form' : 'Add Class'}
         </button>}
 
-        <div className="border-b flex justify-end space-x-4 items-center">
+        {/* <div className="border-b flex justify-end space-x-4 items-center">
           <span className="text-lg">🎓: </span>
           {semesters && semesters.map((sem, idx) => {
             const isActive = currentSemester === sem;
@@ -249,11 +297,13 @@ useEffect(() => {
             );
           })}
 
-        </div>
+        </div> */}
       </div>
-      <div className="min-h-screen flex flex-col">
+      <div className="h-screen flex flex-col"
+        onMouseEnter={() => setIsAutoplayPaused(true)} // Sets state to true, pausing autoplay
+        onMouseLeave={() => setIsAutoplayPaused(false)}>
         {user && showForm && (
-          <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
+          <div className={`transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
             onTransitionEnd={(e) => {
               if (!showForm && e.propertyName === 'max-height') {
                 e.currentTarget.style.height = '0px';
@@ -270,7 +320,7 @@ useEffect(() => {
           initialView="timeGridWeek"
           slotMinTime="09:00:00"
           slotMaxTime="18:50:00"
-          height="auto"
+          height="100%"
           allDaySlot={false}
           hiddenDays={[0]}
           timeZone="local"
@@ -289,7 +339,7 @@ useEffect(() => {
           eventMinHeight={30}
           headerToolbar={{
             left: !!user ? 'handleResetRescheduled' : '',
-            center: 'title',
+            center: 'title currentsemesterbutton',
             right: ''
 
           }}
@@ -297,8 +347,10 @@ useEffect(() => {
             handleResetRescheduled: {
               text: 'RESET',
               click: handleResetRescheduled,
-            },
-
+            }, currentsemesterbutton: {
+              text: `(Semester ${currentSemester})`,
+              click: () => { }
+            }
           }}
         />
       </div>
