@@ -105,7 +105,6 @@ export default function HomePage() {
       fetchEvents(currentSemester);
     }
   }, [currentSemester]);
-// Optional: Polling every 5 minutes (for read-only users like students)
 useEffect(() => {
   let interval;
 
@@ -117,8 +116,20 @@ useEffect(() => {
     }, 15000);
   };
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      fetchEvents(currentSemester); // force refresh when returning to tab
+    }
+  });
+
   startPolling();
+
+  return () => {
+    clearInterval(interval);
+    document.removeEventListener('visibilitychange', () => {});
+  };
 }, [currentSemester, fetchEvents]);
+
 
   const handleEventSaved = () => {
     fetchEvents(currentSemester);
