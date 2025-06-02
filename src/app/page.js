@@ -7,13 +7,15 @@ const FullCalendar = dynamic(() => import('@fullcalendar/react'), {
 import { supabase } from '@/lib/supabaseClient';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent } from './api/semester/route';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
 import EventForm from './input';
 import AuthButton from './authButton';
 import './calendar.css'
 import './globals.css';
+
+
 
 export default function HomePage() {
   const [events, setEvents] = useState([]);
@@ -40,6 +42,36 @@ export default function HomePage() {
       listener.subscription.unsubscribe()
     }
   }, [])
+  const fetchEvents = useCallback(async (semesterId) => {
+  try {
+    const eventsData = await getSemester(semesterId);
+    setEvents(eventsData);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+  }
+}, []);
+// useEffect(() => {
+//   if (!user) return;
+
+//   const channel = supabase
+//     .channel('schedule-changes-${user?.id}-${currentSemester}')
+//     .on(
+//       'postgres_changes',
+//       {
+//         event: '*',
+//         schema: 'public',
+//         table: 'schedule',
+//       },
+//       (payload) => {
+//         fetchEvents(currentSemester);
+//       }
+//     )
+//     .subscribe();
+
+//   return () => {
+//     supabase.removeChannel(channel);
+//   };
+// }, [user, currentSemester,fetchEvents]);
 
   useEffect(() => {
     const loadSemesters = async () => {
@@ -60,19 +92,33 @@ export default function HomePage() {
     loadSemesters();
   }, []);
 
-  const fetchEvents = async (semesterId) => {
-    try {
-      const eventsData = await getSemester(semesterId);
-      setEvents(eventsData);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
+  // const fetchEvents = async (semesterId) => {
+  //   try {
+  //     const eventsData = await getSemester(semesterId);
+  //     setEvents(eventsData);
+  //   } catch (error) {
+  //     console.error("Error fetching events:", error);
+  //   }
+  // };
   useEffect(() => {
     if (currentSemester) {
       fetchEvents(currentSemester);
     }
   }, [currentSemester]);
+// Optional: Polling every 5 minutes (for read-only users like students)
+useEffect(() => {
+  let interval;
+
+  const startPolling = () => {
+    interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchEvents(currentSemester);
+      }
+    }, 15000);
+  };
+
+  startPolling();
+}, [currentSemester, fetchEvents]);
 
   const handleEventSaved = () => {
     fetchEvents(currentSemester);
@@ -143,6 +189,11 @@ export default function HomePage() {
         {room && (
           <div className="fc-event-room text-xs text-gray-600">{!rescheduled && "Rm:"} {room}</div>
         )}
+         {professor && (
+            <div className="text-xs text-gray-600 mt-0.5">
+                Prof. {professor}
+            </div>
+          )}
       </div>
     )
   };
