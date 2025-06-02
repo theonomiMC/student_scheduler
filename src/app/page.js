@@ -109,26 +109,20 @@ useEffect(() => {
   let interval;
 
   const startPolling = () => {
+    if (interval) clearInterval(interval);
     interval = setInterval(() => {
       if (document.visibilityState === 'visible') {
         fetchEvents(currentSemester);
       }
-    }, 15000);
+    }, 15000); // every 15 seconds
   };
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      fetchEvents(currentSemester); // force refresh when returning to tab
-    }
-  });
 
   startPolling();
 
-  return () => {
-    clearInterval(interval);
-    document.removeEventListener('visibilitychange', () => {});
-  };
+  // Clear interval on unmount
+  return () => clearInterval(interval);
 }, [currentSemester, fetchEvents]);
+
 
 
   const handleEventSaved = () => {
@@ -197,14 +191,12 @@ useEffect(() => {
         <div className="fc-event-title font-semibold text-sm text-gray-800">
           {title || ''}
         </div>
-        {room && (
-          <div className="fc-event-room text-xs text-gray-600">{!rescheduled && "Rm:"} {room}</div>
+        {(room || professor) && (
+          <div className="text-xs text-gray-600 flex flex-col mt-0.5">
+            {room && <span>{!rescheduled && "Rm:"} {room}</span>}
+            {professor && <span>Prof. {professor}</span>}
+          </div>
         )}
-         {professor && (
-            <div className="text-xs text-gray-600 mt-0.5">
-                Prof. {professor}
-            </div>
-          )}
       </div>
     )
   };
