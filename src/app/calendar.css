@@ -7,7 +7,7 @@
     /* padding: 15px; */
     background-color: #ffffff;
     border-radius: 10px;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .fc .fc-toolbar {
@@ -281,4 +281,13 @@ color:#111827!important;
 .fc-toolbar-chunk{
 display: flex;
 align-items: baseline;
+}
+
+
+
+.fc .fc-timegrid-now-indicator-line {
+  background-color: rgb(0, 179, 255); /* The main color of the line */
+  /* border: none; Remove any default border if present */
+  /* width: 2px; Make it a slightly thicker line, adjust as desired (e.g., 1px, 3px) */
+  /* z-index: -1; Ensure it's on top of events. Events are usually z-index 2 or default. */
 }

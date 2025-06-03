@@ -17,6 +17,7 @@ export async function getSemester(num) {
       professor: event.professor,
       room: event.room,
       status: event.status,
+      semester: event.semester,
       rescheduled: event.rescheduled
     }
   }));
@@ -32,6 +33,7 @@ export const handleEventDrop = async (info) => {
     start: event?.start ? event.start.toTimeString().slice(0, 5) : null,
     end: event?.start ? event.end.toTimeString().slice(0, 5) : null,
     day_of_week: event?.start ? (event.start.getDay() === 0 ? 7 : event.start.getDay()) : null,
+    semester:event?.extendedProps.semester,
     rs_start: oldEvent?.start.toTimeString().slice(0, 5) || null,
     rs_end: oldEvent?.end.toTimeString().slice(0, 5) || null,
     rs_day: oldEvent?.start.getDay() === 0 ? 7 : oldEvent.start.getDay() || null,

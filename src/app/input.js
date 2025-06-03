@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react";
 import { insertEvent, updateEvent } from "./api/semester/route";
 
-export default function EventForm({ onSave, semester, existingEvent }) {
+export default function EventForm({ onSave, existingEvent }) {
     const [formData, setFormData] = useState({
         title: "",
         day_of_week: 1,
         startTime: "",
         endTime: "",
+        semester: 1,
         room: "",
         professor: "",
         rescheduled: false,
@@ -17,6 +18,7 @@ export default function EventForm({ onSave, semester, existingEvent }) {
             setFormData((prev) => ({
                 ...prev,
                 title: existingEvent?.title || "",
+                semester: existingEvent?.extendedProps?.semester,
                 room: existingEvent.extendedProps?.room || "",
                 professor: existingEvent.extendedProps?.professor || "",
                 rescheduled: existingEvent.extendedProps?.rescheduled || false,
@@ -28,12 +30,11 @@ export default function EventForm({ onSave, semester, existingEvent }) {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]:
-                type === "checkbox"
-                    ? checked
-                    : name === "day_of_week"
-                        ? parseInt(value)
-                        : value,
+            [name]: type === "checkbox"
+                ? checked
+                : name === "semester" || name === "day_of_week"
+                    ? parseInt(value, 10)
+                    : value,
         }));
     };
 
@@ -56,16 +57,17 @@ export default function EventForm({ onSave, semester, existingEvent }) {
             start: formData.startTime,
             day_of_week: parseInt(formData.day_of_week),
             end: formData.endTime,
+            semester: parseInt(formData.semester),
             room: formData.room,
             professor: formData.professor,
-            semester,
+            // semester,
             rescheduled: formData.rescheduled !== undefined ? formData.rescheduled : false,
         };
         let editedEvent = {
             title: formData.title,
             room: formData.room,
             professor: formData.professor,
-            semester,
+            semester: formData.semester,
             rescheduled: formData.rescheduled !== undefined ? formData.rescheduled : false,
         };
         if (existingEvent?.id) {
@@ -82,6 +84,7 @@ export default function EventForm({ onSave, semester, existingEvent }) {
             day_of_week: 1,
             startTime: "",
             endTime: "",
+            semester: 1,
             room: "",
             professor: "",
             rescheduled: false
@@ -123,7 +126,17 @@ export default function EventForm({ onSave, semester, existingEvent }) {
                 name="endTime" value={formData.endTime} onChange={handleChange} className="input" required={!!existingEvent} disabled={!!existingEvent} />
             <input type="text" name="room" placeholder="Room" value={formData.room} onChange={handleChange} className="input" />
             <input type="text" name="professor" placeholder="Professor" value={formData.professor} onChange={handleChange} className="input" />
+            <select name="semester" value={formData.semester} onChange={handleChange} className="input">
+                {[1, 2, 3, 4, 5, 6].map((s) => {
+                    const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 
+                    return (
+                        <option key={s} value={s}>
+                            Semester {ROMAN_NUMERALS[s - 1]}
+                        </option>
+                    )
+                })}
+            </select>
             {/* Rescheduled Checkbox */}
             <div className="col-span-2 flex items-center">
                 <input
