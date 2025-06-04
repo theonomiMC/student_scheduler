@@ -28,11 +28,7 @@ export default function HomePage() {
   const [semesterIndex, setSemesterIndex] = useState(0);
 
   const mondayInitialDate = getMondayOfCurrentWeek()
-  const allSemesters = [1, 2, 3, 4, 5, 6];
-  const autoplayRef = useRef(null); // Moved up — always define refs before use
-  const intervalRef = useRef(null); // This is now optional if unused elsewhere
-
-  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
+  const autoplayRef = useRef(null);
 
   // Fetch current user on load and listen for auth state change
   useEffect(() => {
@@ -93,7 +89,7 @@ export default function HomePage() {
         setCurrentSemester(semesters[next]);
         return next;
       });
-    }, 5000);
+    }, 4000);
   };
 
   const stopAutoplay = () => {
@@ -125,31 +121,14 @@ export default function HomePage() {
       fetchEvents(currentSemester);
     }
   }, [currentSemester]);
-  // useEffect(() => {
-  //   let interval;
 
-  //   const startPolling = () => {
-  //     if (interval) clearInterval(interval);
-  //     interval = setInterval(() => {
-  //       if (document.visibilityState === 'visible') {
-  //         fetchEvents(currentSemester);
-  //       }
-  //     }, 15000); // every 15 seconds
-  //   };
-
-  //   startPolling();
-
-  //   // Clear interval on unmount
-  //   return () => clearInterval(interval);
-  // }, [currentSemester, fetchEvents]);
-
-
-
+  // Save the Events
   const handleEventSaved = () => {
     fetchEvents(currentSemester);
     setShowForm(false);
     setSelectedEvent(null)
   };
+  // Format Calender content
   const renderEventContent = (eventInfo) => {
     const { timeText, event } = eventInfo
     if (!event) return null;
@@ -184,7 +163,7 @@ export default function HomePage() {
       <div
         className={`fc-event-custom-content relative group
            rounded-md shadow-sm transition sm:text-sm text-[10px] 
-        ${rescheduled ? 'bg-brand-yellow' : 'bg-white'}
+        ${rescheduled ? 'bg-brand-yellow pt-[3px]' : 'bg-white'}
       `}
         title={tooltipText}
       >
@@ -235,12 +214,12 @@ export default function HomePage() {
   // console.log(events)
   return (
     <div className="flex flex-col h-screen">
-
-      {/* Add class button */}
       {/* <div className="group relative w-full h-8 hover:h-auto transition-all duration-300"></div> */}
       <div className='tools px-5'>
         <AuthButton />
+        {/* {!user && <span className='text-gray-400 text-xs tracking-wide font-medium opacity-90'>EAST - WEST UNIVERSITY</span>} */}
         {user && (<div className='flex gap-3 border-l-2 border-r-2 px-2 border-gray-100'>
+          {/* Add class button */}
           <button type='button'
             onClick={() => setShowForm(prev => !prev)}
             className='px-1 flex items-center gap-2 text-[0.8em] max-h-max text-blue-800
@@ -308,7 +287,6 @@ export default function HomePage() {
             // height='auto'
             height="100%"
             expandRows={true}
-            // contentHeight="auto"
             allDaySlot={false}
             hiddenDays={[0]}
             timeZone="local"
@@ -327,23 +305,17 @@ export default function HomePage() {
             eventMinHeight={30}
             headerToolbar={{
               left:
-                // !!user ? 'handleResetRescheduled' :
                 '',
               center: 'title currentsemesterbutton',
-              right: ''
+              right: 'eee'
 
             }}
             customButtons={{
-              // handleResetRescheduled: {
-              //   text: 'RESET',
-              //   click: handleResetRescheduled,
-              // }, 
               currentsemesterbutton: {
                 text: `(Semester ${currentSemester})`,
                 click: () => { }
               }
             }}
-
           />
         </div>
       </div>
