@@ -182,8 +182,8 @@ export default function HomePage() {
       ${rescheduled ? ' (Rescheduled)' : ''}`;
     return (
       <div
-        className={`fc-event-custom-content relative group p-2
-           rounded-md shadow-sm transition sm:text-sm text-[10px]
+        className={`fc-event-custom-content relative group
+           rounded-md shadow-sm transition sm:text-sm text-[10px] 
         ${rescheduled ? 'bg-brand-yellow' : 'bg-white'}
       `}
         title={tooltipText}
@@ -204,17 +204,17 @@ export default function HomePage() {
           🖉
         </button>)}
         {timeText && (
-          <div className="fc-event-time text-xs font-medium text-gray-700">
+          <div className="fc-event-time text-xs font-bold text-gray-700">
             {timeText}
           </div>
         )}
-        <div className="fc-event-title font-semibold text-sm text-gray-800">
+        <div className="fc-event-title font-medium text-sm text-gray-800 text-pretty">
           {title || ''}
         </div>
         {(room || professor) && (
           <div className="text-xs text-gray-600 flex flex-col mt-0.5">
-            {room && <span>{!rescheduled && "Rm:"} {room}</span>}
-            {professor && <span>Prof. {professor}</span>}
+            {room && <span className='fc-event-room text-blue-900 font-medium'>{!rescheduled && "Rm:"} {room}</span>}
+            {professor && <span className='hidden sm-inline text-[0.975em] text-blue-800 italic'>({professor})</span>}
           </div>
         )}
       </div>
@@ -234,23 +234,32 @@ export default function HomePage() {
   };
   // console.log(events)
   return (
-    <div className="calendar-container flex flex-col h-screen relative"
-    >
+    <div className="calendar-container flex flex-col h-screen relative">
 
-      <AuthButton />
-      <div style={{ flexGrow: 1 }}>
 
-        {user && <button type='button'
-          onClick={() => setShowForm(prev => !prev)}
-          className='py-2.5 px-6 flex items-center gap-2 text-sm max-h-max text-blue-800
+      {/* Add class button */}
+      <div className='tools'>
+        <AuthButton />
+        {user && (<div className='flex gap-3 border-l-2 border-r-2 px-2 border-gray-100'>
+          <button type='button'
+            onClick={() => setShowForm(prev => !prev)}
+            className='px-1 flex items-center gap-2 text-[0.8em] max-h-max text-blue-800
            cursor-pointer font-medium text-center transition-all
            duration-500 hover:text-red-600'>
-          <svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
-            <path d='M1.22229 5.00011H8.77785M5.00007 8.77789V1.22233' stroke='#5551FF' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round'></path>
-          </svg> {showForm ? 'Hide Form' : 'Add Class'}
-        </button>}
-
-        {user && <div className="border-b flex justify-end space-x-4 items-center">
+            <svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              <path d='M1.22229 5.00011H8.77785M5.00007 8.77789V1.22233' stroke='#5551FF' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round'></path>
+            </svg> {showForm ? 'Hide Form' : 'Add'}
+          </button>
+          {/* Reset button */}
+          <button type='button'
+            onClick={handleResetRescheduled}
+            className='reset-btn'>
+            Reset
+          </button>
+        </div>
+        )}
+        {/* Semesters */}
+        {user && <div className="">
           <span className="text-lg">🎓: </span>
           {semesters && semesters.map((sem, idx) => {
             const isActive = currentSemester === sem;
@@ -289,18 +298,16 @@ export default function HomePage() {
         )}
 
         <div
-          className="calendar-wrapper flex-grow"
-        // onMouseEnter={() => setIsAutoplayPaused(true)}
-        // onMouseLeave={() => setIsAutoplayPaused(false)}
-        >
+          className="calendar-wrapper flex-grow h-screen">
           <FullCalendar
-
             plugins={[timeGridPlugin, interactionPlugin]}
             initialDate={mondayInitialDate}
             initialView="timeGridWeek"
             slotMinTime="09:00:00"
             slotMaxTime="18:50:00"
             height="100%"
+            expandRows={true}
+            // contentHeight="auto"
             allDaySlot={false}
             hiddenDays={[0]}
             timeZone="local"
@@ -318,20 +325,24 @@ export default function HomePage() {
             }}
             eventMinHeight={30}
             headerToolbar={{
-              left: !!user ? 'handleResetRescheduled' : '',
+              left:
+                // !!user ? 'handleResetRescheduled' :
+                '',
               center: 'title currentsemesterbutton',
               right: ''
 
             }}
             customButtons={{
-              handleResetRescheduled: {
-                text: 'RESET',
-                click: handleResetRescheduled,
-              }, currentsemesterbutton: {
+              // handleResetRescheduled: {
+              //   text: 'RESET',
+              //   click: handleResetRescheduled,
+              // }, 
+              currentsemesterbutton: {
                 text: `(Semester ${currentSemester})`,
                 click: () => { }
               }
             }}
+
           />
         </div>
       </div>
