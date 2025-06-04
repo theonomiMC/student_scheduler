@@ -234,11 +234,11 @@ export default function HomePage() {
   };
   // console.log(events)
   return (
-    <div className="calendar-container flex flex-col h-screen relative">
-
+    <div className="flex flex-col h-screen">
 
       {/* Add class button */}
-      <div className='tools'>
+      {/* <div className="group relative w-full h-8 hover:h-auto transition-all duration-300"></div> */}
+      <div className='tools px-5'>
         <AuthButton />
         {user && (<div className='flex gap-3 border-l-2 border-r-2 px-2 border-gray-100'>
           <button type='button'
@@ -283,7 +283,7 @@ export default function HomePage() {
 
         </div>}
       </div>
-      <div className="h-screen flex flex-col"
+      <div className="flex flex-col"
       >
         {user && showForm && (
           <div className={`transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
@@ -298,13 +298,14 @@ export default function HomePage() {
         )}
 
         <div
-          className="calendar-wrapper flex-grow h-screen">
+          className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
           <FullCalendar
             plugins={[timeGridPlugin, interactionPlugin]}
             initialDate={mondayInitialDate}
             initialView="timeGridWeek"
             slotMinTime="09:00:00"
             slotMaxTime="18:50:00"
+            // height='auto'
             height="100%"
             expandRows={true}
             // contentHeight="auto"
