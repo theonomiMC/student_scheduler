@@ -105,7 +105,9 @@
     overflow: hidden;
     color: #555;
 }
-
+ .fc-event-room {
+        font-size: 0.89em!important;
+    }
 .fc-event-title {
     /* font-weight: 700; */
     font-size: 0.89em !important;
@@ -152,7 +154,7 @@
     }
 
     .fc-event-room {
-        font-size: 0.8em;
+        font-size: 0.9em;
     }
 }
 

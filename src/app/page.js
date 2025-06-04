@@ -214,7 +214,7 @@ export default function HomePage() {
         {(room || professor) && (
           <div className="text-xs text-gray-600 flex flex-col mt-0.5">
             {room && <span className='fc-event-room text-blue-900 font-medium'>{!rescheduled && "Rm:"} {room}</span>}
-            {professor && <span className='hidden sm-inline text-[0.975em] text-blue-800 italic'>({professor})</span>}
+            {professor && <span className='hidden sm:inline text-[0.975em] text-blue-800 italic'>({professor})</span>}
           </div>
         )}
       </div>
