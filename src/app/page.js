@@ -94,7 +94,7 @@ export default function HomePage() {
         if (semesterCache.current[nextSemester]) {
           setEvents(semesterCache.current[nextSemester]);
         } else {
-          fetchEvents(nextSemester);
+          fetchEvents(nextSemester, true);
         }
 
         return next;
@@ -126,9 +126,9 @@ export default function HomePage() {
 
 
   // Fetch events when semester changes
-  const fetchEvents = useCallback(async (semesterId) => {
+  const fetchEvents = useCallback(async (semesterId, force = false) => {
     // Check cache first
-    if (semesterCache.current[semesterId]) {
+    if (!force && semesterCache.current[semesterId]) {
       setEvents(semesterCache.current[semesterId]);
       return;
     }
@@ -175,7 +175,7 @@ export default function HomePage() {
 
   // Save the Events
   const handleEventSaved = () => {
-    fetchEvents(currentSemester);
+    fetchEvents(currentSemester, true);
     setShowForm(false);
     setSelectedEvent(null)
   };
@@ -193,10 +193,11 @@ export default function HomePage() {
 
       const result = await deleteEvent(id);
       if (!result.error) {
-        setEvents((prev) => [...prev.filter((e) => e.id !== id)]);
+        fetchEvents(currentSemester, true)
+        // setEvents((prev) => [...prev.filter((e) => e.id !== id)]);
         setSelectedEvent(null)
         setShowForm(false);
-        fetchEvents(currentSemester)
+        
       }
     }
     const handleEdit = () => {
@@ -260,6 +261,7 @@ export default function HomePage() {
     if (!error) {
       const updated = await getSemester(currentSemester);
       setEvents(updated);
+      await fetchEvents(currentSemester, true);
     }
   };
   // console.log(events)
@@ -353,7 +355,7 @@ export default function HomePage() {
               // select={handleSelect}
               eventDrop={async (info) => {
                 await handleEventDrop(info);
-                fetchEvents(currentSemester);
+                fetchEvents(currentSemester, true);
               }}
               eventMinHeight={30}
               headerToolbar={{
