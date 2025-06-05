@@ -14,6 +14,7 @@ import EventForm from './input';
 import AuthButton from './authButton';
 import './calendar.css'
 import './globals.css';
+import Loader from './loader';
 
 
 
@@ -29,6 +30,7 @@ export default function HomePage() {
 
   const mondayInitialDate = getMondayOfCurrentWeek()
   const autoplayRef = useRef(null);
+  const semesterCache = useRef({});
 
   // Fetch current user on load and listen for auth state change
   useEffect(() => {
@@ -86,11 +88,20 @@ export default function HomePage() {
     autoplayRef.current = setInterval(() => {
       setSemesterIndex(prev => {
         const next = (prev + 1) % semesters.length;
-        setCurrentSemester(semesters[next]);
+        const nextSemester = semesters[next];
+        setCurrentSemester(nextSemester);
+
+        if (semesterCache.current[nextSemester]) {
+          setEvents(semesterCache.current[nextSemester]);
+        } else {
+          fetchEvents(nextSemester);
+        }
+
         return next;
       });
     }, 4000);
   };
+
 
   const stopAutoplay = () => {
     if (autoplayRef.current) {
@@ -102,25 +113,65 @@ export default function HomePage() {
   // Manually stop autoplay when user selects a semester
   const handleManualSemesterChange = (idx) => {
     stopAutoplay();
+    const sem = semesters[idx];
     setSemesterIndex(idx);
-    setCurrentSemester(semesters[idx]);
+    setCurrentSemester(sem);
+
+    if (semesterCache.current[sem]) {
+      setEvents(semesterCache.current[sem]);
+    } else {
+      fetchEvents(sem);
+    }
   };
+
 
   // Fetch events when semester changes
   const fetchEvents = useCallback(async (semesterId) => {
+    // Check cache first
+    if (semesterCache.current[semesterId]) {
+      setEvents(semesterCache.current[semesterId]);
+      return;
+    }
+
     try {
       const eventsData = await getSemester(semesterId);
+      semesterCache.current[semesterId] = eventsData;
       setEvents(eventsData);
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   }, []);
 
+
   useEffect(() => {
     if (currentSemester) {
       fetchEvents(currentSemester);
     }
   }, [currentSemester]);
+
+  useEffect(() => {
+    if (semesters.length === 0) return;
+
+    const refreshAllSemesters = async () => {
+      for (const sem of semesters) {
+        try {
+          const data = await getSemester(sem);
+          semesterCache.current[sem] = data;
+
+          if (sem === currentSemester) {
+            setEvents(data); // If user is viewing it, update UI
+          }
+        } catch (error) {
+          console.error(`Error refreshing semester ${sem}:`, error);
+        }
+      }
+    };
+
+    const intervalId = setInterval(refreshAllSemesters, 10 * 60 * 1000); // every 10 mins
+    refreshAllSemesters(); // immediate refresh on mount
+
+    return () => clearInterval(intervalId);
+  }, [semesters, currentSemester]);
 
   // Save the Events
   const handleEventSaved = () => {
@@ -192,7 +243,7 @@ export default function HomePage() {
         </div>
         {(room || professor) && (
           <div className="text-xs text-gray-600 flex flex-col mt-0.5">
-            {room && <span className='fc-event-room text-blue-900 font-medium'>{!rescheduled && "Rm:"} {room}</span>}
+            {room && <span className='fc-event-room text-blue-900 font-medium'>Rm: {room}</span>}
             {professor && <span className='hidden sm:inline text-[0.975em] text-blue-800 italic'>({professor})</span>}
           </div>
         )}
@@ -275,49 +326,52 @@ export default function HomePage() {
             <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
           </div>
         )}
+        {events.length ===0 ? (
+          <Loader />
+        ) : (
+          <div
+            className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
+            <FullCalendar
+              plugins={[timeGridPlugin, interactionPlugin]}
+              initialDate={mondayInitialDate}
+              initialView="timeGridWeek"
+              slotMinTime="09:00:00"
+              slotMaxTime="18:50:00"
+              // height='auto'
+              height="100%"
+              expandRows={true}
+              allDaySlot={false}
+              hiddenDays={[0]}
+              timeZone="local"
+              nowIndicator={true}
+              editable={!!user}
+              selectable={!!user}
+              selectMirror={!!user}
+              eventDurationEditable={!!user}
+              eventContent={renderEventContent}
+              events={events}
+              // select={handleSelect}
+              eventDrop={async (info) => {
+                await handleEventDrop(info);
+                fetchEvents(currentSemester);
+              }}
+              eventMinHeight={30}
+              headerToolbar={{
+                left:
+                  '',
+                center: 'title currentsemesterbutton',
+                right: 'eee'
 
-        <div
-          className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
-          <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin]}
-            initialDate={mondayInitialDate}
-            initialView="timeGridWeek"
-            slotMinTime="09:00:00"
-            slotMaxTime="18:50:00"
-            // height='auto'
-            height="100%"
-            expandRows={true}
-            allDaySlot={false}
-            hiddenDays={[0]}
-            timeZone="local"
-            nowIndicator={true}
-            editable={!!user}
-            selectable={!!user}
-            selectMirror={!!user}
-            eventDurationEditable={!!user}
-            eventContent={renderEventContent}
-            events={events}
-            // select={handleSelect}
-            eventDrop={async (info) => {
-              await handleEventDrop(info);
-              fetchEvents(currentSemester);
-            }}
-            eventMinHeight={30}
-            headerToolbar={{
-              left:
-                '',
-              center: 'title currentsemesterbutton',
-              right: 'eee'
-
-            }}
-            customButtons={{
-              currentsemesterbutton: {
-                text: `(Semester ${currentSemester})`,
-                click: () => { }
-              }
-            }}
-          />
-        </div>
+              }}
+              customButtons={{
+                currentsemesterbutton: {
+                  text: `(Semester ${currentSemester})`,
+                  click: () => { }
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
