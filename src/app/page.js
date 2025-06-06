@@ -1,5 +1,5 @@
-// app/page.js or any component
 'use client';
+
 import dynamic from 'next/dynamic';
 const FullCalendar = dynamic(() => import('@fullcalendar/react'), {
   ssr: false,
@@ -10,11 +10,12 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent, getAllSemesters } from './api/semester/route';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
-import EventForm from './input';
-import AuthButton from './authButton';
+import EventForm from './components/input';
+import AuthButton from './components/authButton';
 import './calendar.css';
 import './globals.css';
-import Loader from './loader';
+import Loader from './components/loader';
+import EventToolbar from './components/toolbar';
 
 export default function HomePage() {
   const [events, setEvents] = useState([]);
@@ -63,7 +64,6 @@ export default function HomePage() {
     }
   }, [currentSemester]);
 
-
   // Fetch semester list from DB
   useEffect(() => {
     const loadSemesters = async () => {
@@ -73,7 +73,6 @@ export default function HomePage() {
         console.error('Failed to fetch semesters:', error);
         return;
       }
-
       const uniqueSemesters = [...new Set(data.map(item => item.semester))].sort();
       setSemesters(uniqueSemesters);
 
@@ -96,7 +95,7 @@ export default function HomePage() {
     return () => stopAutoplay();
   }, [user, semesters]);
 
-  // Autoplay logic
+  // Start event auto-play
   const startAutoplay = () => {
     if (autoplayRef.current) return;
 
@@ -114,10 +113,9 @@ export default function HomePage() {
       } else {
         fetchEvents(nextSemester);
       }
-    }, 5000);
+    }, 4000);
   };
-
-
+  // Stop event auto-play
   const stopAutoplay = () => {
     if (autoplayRef.current) {
       clearInterval(autoplayRef.current);
@@ -142,14 +140,13 @@ export default function HomePage() {
 
   // Fetch events when semester changes
   const fetchEvents = useCallback(async (semesterId, force = false) => {
-    // console.log(`[fetchEvents] ${force ? 'Forced' : 'Conditional'} fetch for semester ${semesterId}`);
     // Check cache first
     if (!force && semesterCache.current[semesterId]) {
       console.log(`[Cache Hit] Serving events for semester ${semesterId} from cache.`);
       setEvents(semesterCache.current[semesterId]);
       return;
     }
-    // console.log(`[API Call] Fetching events for semester ${semesterId} from Supabase. (Force: ${force})`);
+
     try {
       const eventsData = await getSemester(semesterId);
       semesterCache.current[semesterId] = eventsData; // Cache the data
@@ -161,13 +158,10 @@ export default function HomePage() {
 
   useEffect(() => {
     if (semesters.length === 0) return;
-
     fetchAllSemesters();
-
     const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
     return () => clearInterval(intervalId);
   }, [semesters, fetchAllSemesters]);
-
 
   // Save the Events
   const handleEventSaved = () => {
@@ -175,6 +169,7 @@ export default function HomePage() {
     setShowForm(false);
     setSelectedEvent(null);
   };
+
   // Format Calender content
   const renderEventContent = (eventInfo) => {
     const { timeText, event } = eventInfo;
@@ -243,6 +238,7 @@ export default function HomePage() {
     );
   };
 
+  // Reset rescheduled events for all semesters
   const handleResetRescheduled = async () => {
     stopAutoplay()
     const confirmed = confirm('Reset all rescheduled events?');
@@ -250,7 +246,6 @@ export default function HomePage() {
       startAutoplay
       return;
     }
-
     const { error } = await resetRescheduledEvents();
 
     if (!error) {
@@ -260,75 +255,35 @@ export default function HomePage() {
     }
     startAutoplay()
   };
-  // console.log('semester',currentSemester, events)
+
   return (
     <div className="flex flex-col h-screen">
-      <div className="tools px-5">
-        <AuthButton />
-        {!user && (
-          <div className="max-w-6xl mx-auto px-4 
-           text-xs text-gray-400">
-            Student Schedule
-          </div>
-        )}
-        {user && (
-          <div className="flex gap-3 border-l-2 border-r-2 px-2 border-gray-100">
-            {/* Add class button */}
-            <button
-              type="button"
-              onClick={() => setShowForm(prev => !prev)}
-              className="px-1 flex items-center gap-2 text-[0.8em] max-h-max text-blue-800 cursor-pointer font-medium text-center transition-all duration-500 hover:text-red-600"
-            >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.22229 5.00011H8.77785M5.00007 8.77789V1.22233" stroke="#5551FF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>{' '}
-              {showForm ? 'Hide Form' : 'Add'}
-            </button>
-            {/* Reset button */}
-            <button type="button" onClick={handleResetRescheduled} className="reset-btn">
-              Reset
-            </button>
-          </div>
-        )}
-        {/* Semesters */}
-        {user && (
-          <div className="">
-            <span className="text-lg">🎓: </span>
-            {semesters &&
-              semesters.map((sem, idx) => {
-                const isActive = currentSemester === sem;
-                const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handleManualSemesterChange(idx)}
-                    className={`py-2 px-2 text-sm font-semibold transition-all duration-500 hover:text-red-600 ${isActive ? 'text-red-600' : 'text-slate-700'}`}
-                  >
-                    {ROMAN_NUMERALS[sem - 1]}
-                  </button>
-                );
-              })}
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col">
-        {user &&
-          showForm && (
-            <div
-              className={`transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
-              onTransitionEnd={e => {
-                if (!showForm && e.propertyName === 'max-height') {
-                  e.currentTarget.style.height = '0px';
-                }
-              }}
-            >
-              <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
-            </div>
-          )}
-
-        {events.length === 0 || serverOffline ? (
-          <Loader message={serverOffline ? 'Server offline. Trying to reconnect...' : "Loading schedule..."} />
-        ) : (
+      {/* if no data, disable entire page */}
+      {events.length ===0 || serverOffline ? (
+        <Loader message={serverOffline ? 'Server offline. Trying to reconnect...' : "Loading schedule..."} />
+      ) : (
+      <>
+        <EventToolbar user={user}
+          showForm={showForm}
+          setShowForm={setShowForm}
+          handleResetRescheduled={handleResetRescheduled}
+          semesters={semesters}
+          currentSemester={currentSemester}
+          handleManualSemesterChange={handleManualSemesterChange} />
+        <div className="flex flex-col">
+          {user &&
+            showForm && (
+              <div
+                className={`transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
+                onTransitionEnd={e => {
+                  if (!showForm && e.propertyName === 'max-height') {
+                    e.currentTarget.style.height = '0px';
+                  }
+                }}
+              >
+                <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
+              </div>
+            )}
           <div className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
             <FullCalendar
               plugins={[timeGridPlugin, interactionPlugin]}
@@ -368,8 +323,9 @@ export default function HomePage() {
               }}
             />
           </div>
-        )}
-      </div>
+        </div>
+      </>
+      )}
     </div>
   );
 }

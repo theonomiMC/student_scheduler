@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
-import Header from '../header'
-import Footer from '../footer'
+import Header from '../components/header'
+import Footer from '../components/footer'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')

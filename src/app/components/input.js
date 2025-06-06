@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { insertEvent, updateEvent } from "./api/semester/route";
+import { insertEvent, updateEvent } from "../api/semester/route";
 
 export default function EventForm({ onSave, existingEvent }) {
     const [formData, setFormData] = useState({

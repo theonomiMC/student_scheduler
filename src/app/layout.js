@@ -1,5 +1,3 @@
-import Footer from "./footer";
-import Header from "./header";
 import './globals.css';
 
 export const metadata = {
@@ -17,9 +15,7 @@ export default function Layout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* <Header /> */}
         {children}
-        {/* <Footer /> */}
       </body>
     </html>
   );
