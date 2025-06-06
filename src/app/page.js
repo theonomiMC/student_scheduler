@@ -25,6 +25,7 @@ export default function HomePage() {
   const [currentSemester, setCurrentSemester] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [semesterIndex, setSemesterIndex] = useState(0);
+  const [serverOffline, setServerOffline] = useState(false)
 
   const mondayInitialDate = getMondayOfCurrentWeek();
   const autoplayRef = useRef(null);
@@ -45,6 +46,8 @@ export default function HomePage() {
       listener.subscription.unsubscribe();
     };
   }, []);
+
+  // Fetch all semesters at once.
   const fetchAllSemesters = useCallback(async () => {
     try {
       const grouped = await getAllSemesters();
@@ -53,8 +56,10 @@ export default function HomePage() {
       if (grouped[currentSemester]) {
         setEvents(grouped[currentSemester]);
       }
+      setServerOffline(false)
     } catch (err) {
       console.error('Failed to fetch all semesters:', err);
+      setServerOffline(true)
     }
   }, [currentSemester]);
 
@@ -317,8 +322,8 @@ export default function HomePage() {
             </div>
           )}
 
-        {events.length === 0 ? (
-          <Loader />
+        {events.length === 0 || serverOffline? (
+          <Loader message={serverOffline ? 'Server offline. Trying to reconnect...':"Loading schedule..." }/>
         ) : (
           <div className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
             <FullCalendar

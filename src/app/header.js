@@ -9,7 +9,7 @@ export default function Header() {
             {/* Logo */}
 
             <Link href={"/"}>
-                <div className="w-full max-w-[300px] hidden sm:block">
+                <div className="w-full max-w-[250px] hidden sm:block">
                     <Image
                         src="/logo.webp"
                         alt="University Logo"
@@ -19,15 +19,15 @@ export default function Header() {
                         priority
                     />
                 </div>
-                <h1 className="font-extrabold text-blue-950 m-0 sm:hidden">EAST - WEST UNIVERSITY</h1>
+                <h1 className="font-extrabold text-blue-950 m-0 sm:hidden text-[1.1rem]">EAST - WEST UNIVERSITY</h1>
             </Link>
             {/* Subheading */}
-            <h2 className="text-lg sm:text-xl font-light text-gray-600 tracking-wide">
+            <h2 className="text-[1rem] sm:text-lg font-light text-gray-600 tracking-wide">
                 Student Class Schedule
             </h2>
 
             {/* Semester Info */}
-            <p className="text-sm sm:text-base text-[#0f395d] font-medium tracking-wide">
+            <p className="text-[0.87rem] sm:text-sm text-[#0f395d] font-medium tracking-wide">
                 for <span className="font-semibold">Semesters I–VI</span>
             </p>
         </div>
