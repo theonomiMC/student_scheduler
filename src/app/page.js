@@ -263,10 +263,14 @@ export default function HomePage() {
   // console.log('semester',currentSemester, events)
   return (
     <div className="flex flex-col h-screen">
-      {/* <div className="group relative w-full h-8 hover:h-auto transition-all duration-300"></div> */}
       <div className="tools px-5">
         <AuthButton />
-        {/* {!user && <span className='text-gray-400 text-xs tracking-wide font-medium opacity-90'>EAST - WEST UNIVERSITY</span>} */}
+        {!user && (
+          <div className="max-w-6xl mx-auto px-4 
+           text-xs text-gray-400">
+            Student Schedule
+          </div>
+        )}
         {user && (
           <div className="flex gap-3 border-l-2 border-r-2 px-2 border-gray-100">
             {/* Add class button */}
@@ -322,8 +326,8 @@ export default function HomePage() {
             </div>
           )}
 
-        {events.length === 0 || serverOffline? (
-          <Loader message={serverOffline ? 'Server offline. Trying to reconnect...':"Loading schedule..." }/>
+        {events.length === 0 || serverOffline ? (
+          <Loader message={serverOffline ? 'Server offline. Trying to reconnect...' : "Loading schedule..."} />
         ) : (
           <div className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
             <FullCalendar

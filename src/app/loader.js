@@ -10,7 +10,7 @@ export default function Loader({ message = "Loading..."}) {
       </div>
 
       {/* Dynamic message */}
-      <span className="text-lg sm:text-xl font-semibold text-center px-4">
+      <span className="text-lg sm:text-xl font-serif text-center px-4">
         {message}
       </span>
     </div>
