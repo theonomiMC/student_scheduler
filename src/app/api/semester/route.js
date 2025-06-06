@@ -22,6 +22,40 @@ export async function getSemester(num) {
     }
   }));
 }
+export async function getAllSemesters() {
+  const { data, error } = await supabase.from('schedule').select('*');
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  const grouped = {};
+
+  data
+    .filter(event => event.start && event.end)
+    .forEach(event => {
+      const semester = event.semester;
+
+      const mappedEvent = {
+        id: event.id,
+        title: event?.title,
+        start: getIsoStringForWeekday(event?.day_of_week, event?.start),
+        end: getIsoStringForWeekday(event?.day_of_week, event?.end),
+        extendedProps: {
+          professor: event.professor,
+          room: event.room,
+          status: event.status,
+          semester: event.semester,
+          rescheduled: event.rescheduled,
+        },
+      };
+
+      if (!grouped[semester]) grouped[semester] = [];
+      grouped[semester].push(mappedEvent);
+    });
+
+  return grouped;
+}
 
 export const handleEventDrop = async (info) => {
   const event = info.event;

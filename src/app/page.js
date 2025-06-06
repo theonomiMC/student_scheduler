@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabaseClient';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent } from './api/semester/route';
+import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent, getAllSemesters } from './api/semester/route';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
 import EventForm from './input';
 import AuthButton from './authButton';
@@ -45,6 +45,19 @@ export default function HomePage() {
       listener.subscription.unsubscribe();
     };
   }, []);
+  const fetchAllSemesters = useCallback(async () => {
+    try {
+      const grouped = await getAllSemesters();
+      semesterCache.current = grouped;
+
+      if (grouped[currentSemester]) {
+        setEvents(grouped[currentSemester]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch all semesters:', err);
+    }
+  }, [currentSemester]);
+
 
   // Fetch semester list from DB
   useEffect(() => {
@@ -80,24 +93,24 @@ export default function HomePage() {
 
   // Autoplay logic
   const startAutoplay = () => {
-  if (autoplayRef.current) return;
+    if (autoplayRef.current) return;
 
-  autoplayRef.current = setInterval(() => {
-    if (semesters.length === 0) return;
+    autoplayRef.current = setInterval(() => {
+      if (semesters.length === 0) return;
 
-    autoplayIndexRef.current = (autoplayIndexRef.current + 1) % semesters.length;
-    const nextSemester = semesters[autoplayIndexRef.current];
+      autoplayIndexRef.current = (autoplayIndexRef.current + 1) % semesters.length;
+      const nextSemester = semesters[autoplayIndexRef.current];
 
-    setSemesterIndex(autoplayIndexRef.current); // state still used for UI
-    setCurrentSemester(nextSemester);
+      setSemesterIndex(autoplayIndexRef.current); // state still used for UI
+      setCurrentSemester(nextSemester);
 
-    if (semesterCache.current[nextSemester]) {
-      setEvents(semesterCache.current[nextSemester]);
-    } else {
-      fetchEvents(nextSemester);
-    }
-  }, 5000);
-};
+      if (semesterCache.current[nextSemester]) {
+        setEvents(semesterCache.current[nextSemester]);
+      } else {
+        fetchEvents(nextSemester);
+      }
+    }, 5000);
+  };
 
 
   const stopAutoplay = () => {
@@ -131,7 +144,7 @@ export default function HomePage() {
       setEvents(semesterCache.current[semesterId]);
       return;
     }
-// console.log(`[API Call] Fetching events for semester ${semesterId} from Supabase. (Force: ${force})`);
+    // console.log(`[API Call] Fetching events for semester ${semesterId} from Supabase. (Force: ${force})`);
     try {
       const eventsData = await getSemester(semesterId);
       semesterCache.current[semesterId] = eventsData; // Cache the data
@@ -144,26 +157,12 @@ export default function HomePage() {
   useEffect(() => {
     if (semesters.length === 0) return;
 
-    const refreshAllSemesters = async () => {
-      for (const sem of semesters) {
-        try {
-          const data = await getSemester(sem);
-          semesterCache.current[sem] = data; // Update cache
+    fetchAllSemesters();
 
-          if (sem === currentSemester) {
-            setEvents(data); // If user is viewing it, update UI
-          }
-        } catch (error) {
-          console.error(`Error refreshing semester ${sem}:`, error);
-        }
-      }
-    };
-
-    const intervalId = setInterval(refreshAllSemesters, 10 * 60 * 1000); // every 10 mins
-    refreshAllSemesters(); // immediate refresh on mount
-
+    const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
     return () => clearInterval(intervalId);
-  }, [semesters, currentSemester]);
+  }, [semesters, fetchAllSemesters]);
+
 
   // Save the Events
   const handleEventSaved = () => {
@@ -240,8 +239,12 @@ export default function HomePage() {
   };
 
   const handleResetRescheduled = async () => {
+    stopAutoplay()
     const confirmed = confirm('Reset all rescheduled events?');
-    if (!confirmed) return;
+    if (!confirmed) {
+      startAutoplay
+      return;
+    }
 
     const { error } = await resetRescheduledEvents();
 
@@ -250,8 +253,9 @@ export default function HomePage() {
       setEvents(updated);
       await fetchEvents(currentSemester, true); // Force refresh
     }
+    startAutoplay()
   };
-  // console.log(events)
+  // console.log('semester',currentSemester, events)
   return (
     <div className="flex flex-col h-screen">
       {/* <div className="group relative w-full h-8 hover:h-auto transition-all duration-300"></div> */}
@@ -350,7 +354,7 @@ export default function HomePage() {
               customButtons={{
                 currentsemesterbutton: {
                   text: `(Semester ${currentSemester})`,
-                  click: () => {},
+                  click: () => { },
                 },
               }}
             />
