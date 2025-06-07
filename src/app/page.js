@@ -156,12 +156,12 @@ export default function HomePage() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (semesters.length === 0) return;
-  //   fetchAllSemesters();
-  //   const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
-  //   return () => clearInterval(intervalId);
-  // }, [semesters, fetchAllSemesters]);
+  useEffect(() => {
+    if (semesters.length === 0) return;
+    fetchAllSemesters();
+    const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
+    return () => clearInterval(intervalId);
+  }, [fetchAllSemesters]);
 
   // Save the Events
   const handleEventSaved = () => {
