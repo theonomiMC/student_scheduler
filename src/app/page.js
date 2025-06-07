@@ -159,7 +159,7 @@ export default function HomePage() {
   useEffect(() => {
     if (semesters.length === 0) return;
     fetchAllSemesters();
-    const intervalId = setInterval(fetchAllSemesters, 80 * 60 * 1000); // Refresh every 10 minutes
+    const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
     return () => clearInterval(intervalId);
   }, [semesters, fetchAllSemesters]);
 
