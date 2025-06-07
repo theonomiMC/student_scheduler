@@ -40,8 +40,25 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchSemesters();
-    const interval = setInterval(fetchSemesters, 1* 60 * 1000);
-    return () => clearInterval(interval);
+ // ✅ Subscribe to Supabase Realtime changes
+  const channel = supabase
+    .channel('calendar')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'schedule' },
+      (payload) => {
+   
+        fetchSemesters(); // Refresh the calendar
+      }
+    )
+    .subscribe();
+
+  // 🧹 Cleanup on unmount
+  return () => {
+    channel.unsubscribe();
+  };
+    // const interval = setInterval(fetchSemesters, 1* 60 * 1000);
+    // return () => clearInterval(interval);
   }, [fetchSemesters]);
 
 
