@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function AuthButton() {
   const [user, setUser] = useState(null)
   const router = useRouter()
+  const pathname = usePathname();
 
   useEffect(() => {
     // Load user on mount
@@ -31,17 +32,19 @@ export default function AuthButton() {
       console.error('Logout error:', error.message);
     } else {
       console.log('Logged out successfully');
-      router.refresh()
+      router.push('/');
     }
   }
-
+if (pathname === '/login') {
+    return null;
+  }
   const handleLogin = () => {
     router.push('/login')
   }
 
   return (
     <div
-      className="flex-grow"
+      className="absolute top-4 left-4 z-50"
     >
       {user ? (
         <button

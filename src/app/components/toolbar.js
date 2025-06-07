@@ -1,13 +1,13 @@
 'use client'
-import AuthButton from "./authButton";
 
+import AuthButton from "./authButton";
 
 export default function EventToolbar({ user, showForm, setShowForm, handleResetRescheduled, semesters, currentSemester, handleManualSemesterChange }) {
     const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 
     return (
-        <div className="tools px-5">
-        <AuthButton />
+        <div className="tools px-5 ">
+          {/* <AuthButton /> */}
         {!user && <div className="max-w-6xl mx-auto px-4 text-xs text-gray-400">Student Schedule</div>}
         {user && (
           <div className="flex gap-3 border-l-2 border-r-2 px-2 border-gray-100">
@@ -39,7 +39,7 @@ export default function EventToolbar({ user, showForm, setShowForm, handleResetR
                 return (
                   <button
                     key={idx}
-                    onClick={() => handleManualSemesterChange(idx)}
+                    onClick={() => handleManualSemesterChange(sem)}
                     className={`py-2 px-2 text-sm font-semibold transition-all duration-500 hover:text-red-600 ${isActive ? 'text-red-600' : 'text-slate-700'}`}
                   >
                     {ROMAN_NUMERALS[sem - 1]}

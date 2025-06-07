@@ -1,3 +1,4 @@
+import AuthButton from './components/authButton';
 import './globals.css';
 
 export const metadata = {
@@ -15,6 +16,7 @@ export default function Layout({ children }) {
   return (
     <html lang="en">
       <body>
+        <AuthButton />
         {children}
       </body>
     </html>

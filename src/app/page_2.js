@@ -156,12 +156,7 @@ export default function HomePage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (semesters.length === 0) return;
-    fetchAllSemesters();
-    const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
-    return () => clearInterval(intervalId);
-  }, [semesters, fetchAllSemesters]);
+
 
   // Save the Events
   const handleEventSaved = () => {
@@ -255,76 +250,81 @@ export default function HomePage() {
     }
     startAutoplay()
   };
-
+  useEffect(() => {
+    if (semesters.length === 0) return;
+    fetchAllSemesters();
+    const intervalId = setInterval(fetchAllSemesters, 1 * 60 * 1000); // Refresh every 10 minutes
+    return () => clearInterval(intervalId);
+  }, [semesters, fetchAllSemesters]);
   return (
     <div className="flex flex-col h-screen">
       {/* if no data, disable entire page */}
-      {events.length ===0 || serverOffline ? (
+      {events.length === 0 || serverOffline ? (
         <Loader message={serverOffline ? 'Server offline. Trying to reconnect...' : "Loading schedule..."} />
       ) : (
-      <>
-        <EventToolbar user={user}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          handleResetRescheduled={handleResetRescheduled}
-          semesters={semesters}
-          currentSemester={currentSemester}
-          handleManualSemesterChange={handleManualSemesterChange} />
-        <div className="flex flex-col">
-          {user &&
-            showForm && (
-              <div
-                className={`transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
-                onTransitionEnd={e => {
-                  if (!showForm && e.propertyName === 'max-height') {
-                    e.currentTarget.style.height = '0px';
-                  }
+        <>
+          <EventToolbar user={user}
+            showForm={showForm}
+            setShowForm={setShowForm}
+            handleResetRescheduled={handleResetRescheduled}
+            semesters={semesters}
+            currentSemester={currentSemester}
+            handleManualSemesterChange={handleManualSemesterChange} />
+          <div className="flex flex-col">
+            {user &&
+              showForm && (
+                <div
+                  className={`transition-all duration-500 ease-in-out ${showForm ? 'max-h-[500px] opacity-100 mt-4 mb-8' : 'max-h-0 opacity-0'}`}
+                  onTransitionEnd={e => {
+                    if (!showForm && e.propertyName === 'max-height') {
+                      e.currentTarget.style.height = '0px';
+                    }
+                  }}
+                >
+                  <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
+                </div>
+              )}
+            <div className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
+              <FullCalendar
+                plugins={[timeGridPlugin, interactionPlugin]}
+                initialDate={mondayInitialDate}
+                initialView="timeGridWeek"
+                slotMinTime="09:00:00"
+                slotMaxTime="18:50:00"
+                // height='auto'
+                height="100%"
+                expandRows={true}
+                allDaySlot={false}
+                hiddenDays={[0]}
+                timeZone="local"
+                nowIndicator={true}
+                editable={!!user}
+                selectable={!!user}
+                selectMirror={!!user}
+                eventDurationEditable={!!user}
+                eventContent={renderEventContent}
+                events={events}
+                // select={handleSelect}
+                eventDrop={async info => {
+                  await handleEventDrop(info);
+                  fetchEvents(currentSemester, true); // Force refresh
                 }}
-              >
-                <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
-              </div>
-            )}
-          <div className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
-            <FullCalendar
-              plugins={[timeGridPlugin, interactionPlugin]}
-              initialDate={mondayInitialDate}
-              initialView="timeGridWeek"
-              slotMinTime="09:00:00"
-              slotMaxTime="18:50:00"
-              // height='auto'
-              height="100%"
-              expandRows={true}
-              allDaySlot={false}
-              hiddenDays={[0]}
-              timeZone="local"
-              nowIndicator={true}
-              editable={!!user}
-              selectable={!!user}
-              selectMirror={!!user}
-              eventDurationEditable={!!user}
-              eventContent={renderEventContent}
-              events={events}
-              // select={handleSelect}
-              eventDrop={async info => {
-                await handleEventDrop(info);
-                fetchEvents(currentSemester, true); // Force refresh
-              }}
-              eventMinHeight={30}
-              headerToolbar={{
-                left: '',
-                center: 'title currentsemesterbutton',
-                right: 'eee',
-              }}
-              customButtons={{
-                currentsemesterbutton: {
-                  text: `(Semester ${currentSemester})`,
-                  click: () => { },
-                },
-              }}
-            />
+                eventMinHeight={30}
+                headerToolbar={{
+                  left: '',
+                  center: 'title currentsemesterbutton',
+                  right: 'eee',
+                }}
+                customButtons={{
+                  currentsemesterbutton: {
+                    text: `(Semester ${currentSemester})`,
+                    click: () => { },
+                  },
+                }}
+              />
+            </div>
           </div>
-        </div>
-      </>
+        </>
       )}
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+
 import Header from '../components/header'
 import Footer from '../components/footer'
 
@@ -13,21 +14,26 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleLogin = async () => {
+    setError("")
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError(error.message)
     } else {
-      router.push('/')
+      // After login, redirect to the edit page
+      router.push('/edit')
     }
   }
 
   return (
     <div className="h-screen flex flex-col">
-      <Header />
+      <Header />   
+      {/* Login Form */}
       <div className="flex-grow flex items-center justify-center  px-4">
         <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
           <h2 className="text-[1.1rem] font-bold mb-4 text-gray-900">Admin Login</h2>
+          
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Email"
@@ -35,6 +41,8 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+
+          {/* Password Input */}
           <input
             type="password"
             placeholder="Password"
@@ -42,12 +50,18 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button onClick={handleLogin} type='submit' className="bg-gray-100 text-gray-900 px-4 py-2 rounded hover:shadow-md">
+          
+          {/* Login Button */}
+          <button onClick={handleLogin} type="submit" className="bg-gray-100 text-gray-900 px-4 py-2 rounded hover:shadow-md">
             Login
           </button>
+          
+          {/* Error Message */}
           {error && <p className="text-red-600 mt-2">{error}</p>}
         </div>
       </div>
+      
+      {/* Footer */}
       <Footer />
     </div>
   )

@@ -18,6 +18,7 @@
     display: flex;
     width:100%;
     align-items: center;
+    justify-content: flex-end;
     gap:1rem;
     padding-block: 0.5rem;
 }
@@ -295,3 +296,16 @@
  /* .fc-scroller {
   overflow: hidden !important;
 } */
+
+.full-page-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.semester-section {
+  scroll-snap-align: start;
+  height: 100vh;
+  overflow: hidden;
+  border-bottom: 1px solid #e5e7eb;
+}
