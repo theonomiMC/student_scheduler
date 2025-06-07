@@ -11,7 +11,6 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent, getAllSemesters } from './api/semester/route';
 import { getMondayOfCurrentWeek } from '@/utils/helper';
 import EventForm from './components/input';
-import AuthButton from './components/authButton';
 import './calendar.css';
 import './globals.css';
 import Loader from './components/loader';
@@ -25,7 +24,7 @@ export default function HomePage() {
   const [semesters, setSemesters] = useState([]);
   const [currentSemester, setCurrentSemester] = useState(1);
   const [showForm, setShowForm] = useState(false);
-  const [semesterIndex, setSemesterIndex] = useState(0);
+  const [_, setSemesterIndex] = useState(0);
   const [serverOffline, setServerOffline] = useState(false)
 
   const mondayInitialDate = getMondayOfCurrentWeek();
@@ -96,32 +95,45 @@ export default function HomePage() {
   }, [user, semesters]);
 
   // Start event auto-play
-  const startAutoplay = () => {
-    if (autoplayRef.current) return;
+const startAutoplay = () => {
+  if (autoplayRef.current) return;
 
-    autoplayRef.current = setInterval(() => {
-      if (semesters.length === 0) return;
+  const autoplayStep = async () => {
+    if (semesters.length === 0) return;
 
-      autoplayIndexRef.current = (autoplayIndexRef.current + 1) % semesters.length;
-      const nextSemester = semesters[autoplayIndexRef.current];
-
-      setSemesterIndex(autoplayIndexRef.current); // state still used for UI
-      setCurrentSemester(nextSemester);
-
-      if (semesterCache.current[nextSemester]) {
-        setEvents(semesterCache.current[nextSemester]);
-      } else {
-        fetchEvents(nextSemester);
-      }
-    }, 4000);
-  };
-  // Stop event auto-play
-  const stopAutoplay = () => {
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current);
-      autoplayRef.current = null;
+    try {
+      await fetchAllSemesters(); // Fetch before transition
+    } catch (err) {
+      console.error('Autoplay fetch error:', err);
+      // Retry logic or skip
     }
+
+    autoplayIndexRef.current = (autoplayIndexRef.current + 1) % semesters.length;
+    const nextSemester = semesters[autoplayIndexRef.current];
+
+    setSemesterIndex(autoplayIndexRef.current);
+    setCurrentSemester(nextSemester);
+
+    if (semesterCache.current[nextSemester]) {
+      setEvents(semesterCache.current[nextSemester]);
+    } else {
+      fetchEvents(nextSemester);
+    }
+
+    // Schedule next step
+    autoplayRef.current = setTimeout(autoplayStep, 4000);
   };
+
+  autoplayRef.current = setTimeout(autoplayStep, 0);
+};
+
+const stopAutoplay = () => {
+  if (autoplayRef.current) {
+    clearTimeout(autoplayRef.current);
+    autoplayRef.current = null;
+  }
+};
+
 
   // Manually stop autoplay when user selects a semester
   const handleManualSemesterChange = (idx) => {
