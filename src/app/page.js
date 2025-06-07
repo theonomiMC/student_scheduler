@@ -142,7 +142,7 @@ export default function HomePage() {
   const fetchEvents = useCallback(async (semesterId, force = false) => {
     // Check cache first
     if (!force && semesterCache.current[semesterId]) {
-      console.log(`[Cache Hit] Serving events for semester ${semesterId} from cache.`);
+      // console.log(`[Cache Hit] Serving events for semester ${semesterId} from cache.`);
       setEvents(semesterCache.current[semesterId]);
       return;
     }
@@ -156,12 +156,12 @@ export default function HomePage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (semesters.length === 0) return;
-    fetchAllSemesters();
-    const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
-    return () => clearInterval(intervalId);
-  }, [semesters, fetchAllSemesters]);
+  // useEffect(() => {
+  //   if (semesters.length === 0) return;
+  //   fetchAllSemesters();
+  //   const intervalId = setInterval(fetchAllSemesters, 10 * 60 * 1000); // Refresh every 10 minutes
+  //   return () => clearInterval(intervalId);
+  // }, [semesters, fetchAllSemesters]);
 
   // Save the Events
   const handleEventSaved = () => {
