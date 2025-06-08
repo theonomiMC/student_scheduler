@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import Header from '../components/header'
 import Footer from '../components/footer'
+import { LockKeyhole } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -27,12 +28,12 @@ export default function LoginPage() {
 
   return (
     <div className="h-screen flex flex-col">
-      <Header />   
+      <Header />
       {/* Login Form */}
-      <div className="flex-grow flex items-center justify-center  px-4">
+      <div className="flex-grow flex items-center justify-center font-mono px-4">
         <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-          <h2 className="text-[1.1rem] font-bold mb-4 text-gray-900">Admin Login</h2>
-          
+          <h2 className="text-[1.1rem] mb-4 text-blue-950">Admin Login</h2>
+
           {/* Email Input */}
           <input
             type="email"
@@ -50,17 +51,21 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          
+
           {/* Login Button */}
-          <button onClick={handleLogin} type="submit" className="bg-gray-100 text-gray-900 px-4 py-2 rounded hover:shadow-md">
+          <button
+            onClick={handleLogin}
+            type="submit"
+            className="bg-brand-yellow text-blue-800 font-medium px-5 py-2 flex items-center justify-center gap-2 rounded-md shadow-sm hover:shadow-md transition duration-150"
+          >
+            <LockKeyhole size={16} className="text-blue-800 relative top-[-3px]" />
             Login
           </button>
-          
           {/* Error Message */}
           {error && <p className="text-red-600 mt-2">{error}</p>}
         </div>
       </div>
-      
+
       {/* Footer */}
       <Footer />
     </div>

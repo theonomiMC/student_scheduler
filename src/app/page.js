@@ -48,7 +48,7 @@ export default function HomePage() {
         { event: '*', schema: 'public', table: 'schedule' },
         (payload) => {
 
-          fetchSemesters(); // Refresh the calendar
+          fetchSemesters();
         }
       )
       .subscribe();
@@ -119,7 +119,7 @@ export default function HomePage() {
             className="semester-section bg-gray-50 px-2"
           >
             <div className="text-center pt-4 font-bold text-lg
-           text-blue-950 font-[monospace]">
+           text-blue-950 font-sans">
               Semester {romanNumerals[semester - 1]}
             </div>
             <FullCalendar
