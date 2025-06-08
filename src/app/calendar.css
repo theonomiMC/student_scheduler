@@ -93,23 +93,21 @@
     margin-bottom: 2px;
     white-space: normal;
     overflow: hidden;
-    color: #555;
+    color: rgb(11, 11, 108);
 }
  .fc-event-room {
         font-size: 0.89em!important;
     }
 .fc-event-title {
-    /* font-weight: 700; */
     font-size: 0.89em !important;
     margin-bottom: 3px;
     white-space: normal;
-    /* overflow: hidden; */
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     display: -webkit-box;
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical;
-    color: #333;
+    color: #212121;
 }
 
 .fc-event:hover {
@@ -145,12 +143,20 @@
         font-size: 0.9em;
     }
 }
+.fc .fc-scroller-liquid-absolute {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 
+  /* Chrome, Safari, Opera */
+}
+.fc .fc-scroller-liquid-absolute::-webkit-scrollbar {
+  display: none;
+}
 .fc .fc-toolbar-title {
-    font-size: 1.15em !important;
-    font-weight: 600;
+    font-size: 1.1em !important;
+    font-weight: 500;
     margin-bottom: 8px;
-    color: #111827 !important;
+    color: #6b7280 !important;
 }
 
 @media (max-width: 767px) {
@@ -307,5 +313,5 @@
   scroll-snap-align: start;
   height: 100vh;
   overflow: hidden;
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
 }

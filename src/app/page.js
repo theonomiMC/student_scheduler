@@ -40,28 +40,28 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchSemesters();
- // ✅ Subscribe to Supabase Realtime changes
-  const channel = supabase
-    .channel('calendar')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'schedule' },
-      (payload) => {
-   
-        fetchSemesters(); // Refresh the calendar
-      }
-    )
-    .subscribe();
+    // ✅ Subscribe to Supabase Realtime changes
+    const channel = supabase
+      .channel('calendar')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'schedule' },
+        (payload) => {
 
-  // 🧹 Cleanup on unmount
-  return () => {
-    channel.unsubscribe();
-  };
+          fetchSemesters(); // Refresh the calendar
+        }
+      )
+      .subscribe();
+
+    // 🧹 Cleanup on unmount
+    return () => {
+      channel.unsubscribe();
+    };
     // const interval = setInterval(fetchSemesters, 1* 60 * 1000);
     // return () => clearInterval(interval);
   }, [fetchSemesters]);
 
-
+  // auto play semesters
   useEffect(() => {
     if (semesters.length === 0) return;
 
@@ -71,7 +71,7 @@ export default function HomePage() {
       const nextSection = sectionsRef.current[nextIdx];
       if (nextSection) {
         nextSection.scrollIntoView({
-          behavior:  'smooth'
+          behavior: 'smooth'
         });
       }
       autoplayIndexRef.current = nextIdx;
@@ -106,41 +106,46 @@ export default function HomePage() {
   if (serverOffline || semesters.length === 0) {
     return <Loader message={serverOffline ? 'Server offline. Reconnecting…' : 'Loading schedule…'} />;
   }
-// console.log(semesters)
+  // console.log(semesters)
   return (
     <div className="full-page-container">
-      {semesters.map((semester, idx) => (
-        <div
-          key={semester}
-          ref={el => (sectionsRef.current[idx] = el)}
-          className="semester-section bg-gray-50 px-2"
-        >
-          <div className="text-center py-4 font-bold text-lg text-gray-800">
-            Semester {semester}
-            
+      {semesters.map((semester, idx) => {
+        const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        return (
+
+          <div
+            key={semester}
+            ref={el => (sectionsRef.current[idx] = el)}
+            className="semester-section bg-gray-50 px-2"
+          >
+            <div className="text-center pt-4 font-bold text-lg
+           text-blue-950 font-[monospace]">
+              Semester {romanNumerals[semester - 1]}
+            </div>
+            <FullCalendar
+              plugins={[timeGridPlugin, interactionPlugin]}
+              initialDate={mondayInitialDate}
+              initialView="timeGridWeek"
+              slotMinTime="09:00:00"
+              slotMaxTime="18:50:00"
+              height="calc(100vh - 80px)"
+              // height='auto'
+              expandRows={true}
+              allDaySlot={false}
+              hiddenDays={[0]}
+              timeZone="local"
+              nowIndicator={true}
+              eventContent={renderEventContent}
+              events={events[semester] || []}
+              headerToolbar={{
+                left: '',
+                center: 'title',
+                right: '',
+              }}
+            />
           </div>
-          <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin]}
-            initialDate={mondayInitialDate}
-            initialView="timeGridWeek"
-            slotMinTime="09:00:00"
-            slotMaxTime="18:50:00"
-            height="calc(100vh - 80px)"
-            expandRows={true}
-            allDaySlot={false}
-            hiddenDays={[0]}
-            timeZone="local"
-            nowIndicator={true}       
-            eventContent={renderEventContent}
-            events={events[semester] || []}          
-            headerToolbar={{
-              left: '',
-              center: 'title',
-              right: '',
-            }}
-          />
-        </div>
-      ))}
+        )
+      })}
     </div>
   );
 }
