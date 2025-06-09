@@ -62,23 +62,23 @@ export default function HomePage() {
   }, [fetchSemesters]);
 
   // auto play semesters
-  // useEffect(() => {
-  //   if (semesters.length === 0) return;
+  useEffect(() => {
+    if (semesters.length === 0) return;
 
-  //   autoplayIntervalRef.current = setInterval(() => {
-  //     const idx = autoplayIndexRef.current;
-  //     const nextIdx = (idx + 1) % semesters.length;
-  //     const nextSection = sectionsRef.current[nextIdx];
-  //     if (nextSection) {
-  //       nextSection.scrollIntoView({
-  //         behavior: 'smooth'
-  //       });
-  //     }
-  //     autoplayIndexRef.current = nextIdx;
-  //   }, 4000);
+    autoplayIntervalRef.current = setInterval(() => {
+      const idx = autoplayIndexRef.current;
+      const nextIdx = (idx + 1) % semesters.length;
+      const nextSection = sectionsRef.current[nextIdx];
+      if (nextSection) {
+        nextSection.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+      autoplayIndexRef.current = nextIdx;
+    }, 4000);
 
-  //   return () => clearInterval(autoplayIntervalRef.current);
-  // }, [semesters]);
+    return () => clearInterval(autoplayIntervalRef.current);
+  }, [semesters]);
 
 
   const renderEventContent = (eventInfo) => {
