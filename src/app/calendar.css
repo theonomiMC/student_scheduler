@@ -1,5 +1,29 @@
+.full-page-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+    /* height: -webkit-fill-available; */
+}
+
+.semester-section {
+    scroll-snap-align: start;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-wrapper {
+    flex: 1;
+    min-height: 0;
+}
+
+.fc .fc-scroller .fc-scroller-liquid-absolute {
+    width: 1px;
+    background-color: red !important;
+}
+
 .fc .fc-toolbar {
-    /* background-color: red; */
     padding-bottom: 5px;
 }
 
@@ -13,15 +37,17 @@
     transition: all 0.5s ease;
     text-align: center;
 }
-.tools{
+
+.tools {
     box-sizing: border-box;
     display: flex;
-    width:100%;
+    width: 100%;
     align-items: center;
     justify-content: flex-end;
-    gap:1rem;
+    gap: 1rem;
     padding-block: 0.5rem;
 }
+
 .reset-btn:hover,
 .reset-btn {
     color: #ce1c2e !important;
@@ -83,7 +109,7 @@
     overflow: hidden;
     white-space: normal;
     padding-left: 8px;
-    
+
 
 }
 
@@ -95,9 +121,11 @@
     overflow: hidden;
     color: rgb(11, 11, 108);
 }
- .fc-event-room {
-        font-size: 0.89em!important;
-    }
+
+.fc-event-room {
+    font-size: 0.89em !important;
+}
+
 .fc-event-title {
     font-size: 0.89em !important;
     margin-bottom: 3px;
@@ -143,15 +171,7 @@
         font-size: 0.9em;
     }
 }
-.fc .fc-scroller-liquid-absolute {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
 
-  /* Chrome, Safari, Opera */
-}
-.fc .fc-scroller-liquid-absolute::-webkit-scrollbar {
-  display: none;
-}
 .fc .fc-toolbar-title {
     font-size: 1.1em !important;
     font-weight: 500;
@@ -169,7 +189,6 @@
     }
 
     .fc-event {
-        /* font-size: 0.5em!important; */
         padding: 2px !important;
         box-shadow: none;
         border-radius: 4px;
@@ -217,21 +236,6 @@
     }
 }
 
-/* .fc-daygrid-event {
-    margin-bottom: 1px;
-    border-radius: 3px;
-    padding: 1px 3px 1px 6px;
-    font-size: 0.7em;
-    line-height: 1.1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    text-align: left;
-    border-left-width: 3px;
-    background-color: red!important;
-} */
-
 .fc-daygrid-event .fc-event-time,
 .fc-daygrid-event .fc-event-title {
     white-space: nowrap;
@@ -263,7 +267,7 @@
     color: #111827 !important;
     font-weight: 500 !important;
     font-size: 1rem !important;
-    cursor:default!important;	
+    cursor: default !important;
 }
 
 .fc-toolbar-chunk {
@@ -271,47 +275,53 @@
     align-items: baseline;
 }
 
-.fc-direction-ltr .fc-timegrid-now-indicator-arrow {
-    /* left: 0;
-    border-width: 10px 33px 10px 11px;
-    border-radius: 0px 10px 10px 0px;
-    opacity: .7; */
-}
-
 .fc .fc-timegrid-now-indicator-arrow {
     position: absolute;
     z-index: 4;
-    /* margin-top: -10px; */
     left: 43px;
     border-style: solid;
-    /* border-color: #F2CB05; */
+}
+/* ===== Main Scrollbar Styles ===== */
+/* Applies to all scrollable FullCalendar containers */
+.fc-scroller,
+.fc .fc-timegrid-body,
+.fc .fc-daygrid-body {
+  overflow-y: auto !important;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #dde0e5 #f1f5f9; /* Firefox */
 }
 
-/* .fc .fc-timegrid-now-indicator-line {
-    opacity: .7;
-    position: absolute;
-    background-color: #111827;
-    width: 100vw;
-    left: 0;
-    right: 0;
-    margin-top: -2px;
-    border-style: solid;
-    border-color: hsl(6, 100%, 60%);
-    border-width: 2px 0 0;
-} */
- /* .fc-scroller {
-  overflow: hidden !important;
-} */
-
-.full-page-container {
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-  height: 100vh;
+/* WebKit Scrollbars (Chrome, Safari, Edge) */
+.fc-scroller::-webkit-scrollbar,
+.fc .fc-timegrid-body::-webkit-scrollbar,
+.fc .fc-daygrid-body::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
 }
 
-.semester-section {
-  scroll-snap-align: start;
-  height: 100vh;
-  overflow: hidden;
-  /* border-bottom: 1px solid #e5e7eb; */
+.fc-scroller::-webkit-scrollbar-thumb,
+.fc .fc-timegrid-body::-webkit-scrollbar-thumb,
+.fc .fc-daygrid-body::-webkit-scrollbar-thumb {
+  background: #dde0e5;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.2s;
 }
+
+.fc-scroller::-webkit-scrollbar-thumb:hover,
+.fc .fc-timegrid-body::-webkit-scrollbar-thumb:hover,
+.fc .fc-daygrid-body::-webkit-scrollbar-thumb:hover {
+  background: #dde0e5;
+}
+
+.fc-scroller::-webkit-scrollbar-track,
+.fc .fc-timegrid-body::-webkit-scrollbar-track,
+.fc .fc-daygrid-body::-webkit-scrollbar-track {
+  background: #dde0e5;
+  border-radius: 10px;
+}
+
+/* ===== Mobile Optimization ===== */
+
+

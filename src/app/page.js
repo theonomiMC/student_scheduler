@@ -62,23 +62,23 @@ export default function HomePage() {
   }, [fetchSemesters]);
 
   // auto play semesters
-  useEffect(() => {
-    if (semesters.length === 0) return;
+  // useEffect(() => {
+  //   if (semesters.length === 0) return;
 
-    autoplayIntervalRef.current = setInterval(() => {
-      const idx = autoplayIndexRef.current;
-      const nextIdx = (idx + 1) % semesters.length;
-      const nextSection = sectionsRef.current[nextIdx];
-      if (nextSection) {
-        nextSection.scrollIntoView({
-          behavior: 'smooth'
-        });
-      }
-      autoplayIndexRef.current = nextIdx;
-    }, 4000);
+  //   autoplayIntervalRef.current = setInterval(() => {
+  //     const idx = autoplayIndexRef.current;
+  //     const nextIdx = (idx + 1) % semesters.length;
+  //     const nextSection = sectionsRef.current[nextIdx];
+  //     if (nextSection) {
+  //       nextSection.scrollIntoView({
+  //         behavior: 'smooth'
+  //       });
+  //     }
+  //     autoplayIndexRef.current = nextIdx;
+  //   }, 4000);
 
-    return () => clearInterval(autoplayIntervalRef.current);
-  }, [semesters]);
+  //   return () => clearInterval(autoplayIntervalRef.current);
+  // }, [semesters]);
 
 
   const renderEventContent = (eventInfo) => {
@@ -122,27 +122,31 @@ export default function HomePage() {
            text-blue-950 font-sans">
               Semester {romanNumerals[semester - 1]}
             </div>
-            <FullCalendar
-              plugins={[timeGridPlugin, interactionPlugin]}
-              initialDate={mondayInitialDate}
-              initialView="timeGridWeek"
-              slotMinTime="09:00:00"
-              slotMaxTime="18:50:00"
-              height="calc(100vh - 80px)"
-              // height='auto'
-              expandRows={true}
-              allDaySlot={false}
-              hiddenDays={[0]}
-              timeZone="local"
-              nowIndicator={true}
-              eventContent={renderEventContent}
-              events={events[semester] || []}
-              headerToolbar={{
-                left: '',
-                center: 'title',
-                right: '',
-              }}
-            />
+            <div className='calendar-wrapper'>
+              <FullCalendar
+                plugins={[timeGridPlugin, interactionPlugin]}
+                initialDate={mondayInitialDate}
+                initialView="timeGridWeek"
+                slotMinTime="09:00:00"
+                slotMaxTime="18:30:00"
+                height="100%"
+                expandRows={true}
+                allDaySlot={false}
+                hiddenDays={[0]}
+                timeZone="local"
+                nowIndicator={true}
+                eventContent={renderEventContent}
+                events={events[semester] || []}
+                headerToolbar={{
+                  left: '',
+                  center: 'title',
+                  right: '',
+                }}
+                // stickyHeaderDates={false}
+                // slotMinHeight={40}
+                // dayMaxEventRows={false}
+              />
+            </div>
           </div>
         )
       })}
