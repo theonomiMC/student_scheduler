@@ -16,6 +16,7 @@ import Loader from '../components/loader';
 import EventToolbar from '../components/toolbar';
 import '../calendar.css';
 import '../globals.css';
+import { Pencil, PencilIcon } from 'lucide-react';
 
 export default function EditPage() {
     const [events, setEvents] = useState([]);
@@ -158,7 +159,8 @@ export default function EditPage() {
                 {user && (
                     <button
                         onClick={handleDelete}
-                        className="absolute top-1 right-1 text-xs text-red-500 hover:text-red-700 bg-white rounded-full px-1 shadow opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        className="absolute top-1 right-1 text-xs text-red-500 hover:text-red-700 bg-transparent px-1
+                         opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                         title="Delete"
                     >
                         ❌
@@ -167,11 +169,12 @@ export default function EditPage() {
                 {user && (
                     <button
                         onClick={handleEdit}
-                        className="absolute top-1 left-1 text-xs text-blue-500 hover:text-blue-700 bg-white rounded-full px-1 shadow opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        className="absolute top-7 right-1 p-1 text-xs bg-transparent opacity-0 border-none outline-none hover: duration-200 group-hover:opacity-100"
                         title="Edit"
                     >
-                        🖉
+                        <PencilIcon size={15} color="#1d4ed8" />
                     </button>
+
                 )}
                 {timeText && (
                     <div className="fc-event-time text-xs font-bold text-gray-700">
@@ -241,7 +244,6 @@ export default function EditPage() {
                                 initialView="timeGridWeek"
                                 slotMinTime="09:00:00"
                                 slotMaxTime="18:50:00"
-
                                 height="100%"
                                 expandRows={true}
                                 allDaySlot={false}
