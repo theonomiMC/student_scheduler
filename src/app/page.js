@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, use } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { getAllData } from './api/semester/route';
 import Loader from './components/loader';
 import { getCurrentWeekRange } from '@/utils/helper';
+import { useCurrentTimeSlot } from '@/utils/useCurrentTimeSlot';
 import './calendar.css';
 import './globals.css';
+
 
 
 const times = [
@@ -20,6 +22,7 @@ const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export default function HomePage() {
   const [eventsByDay, setEventsByDay] = useState({});
   const [serverOffline, setServerOffline] = useState(false);
+  const currentSlot = useCurrentTimeSlot();
 
   const scrollRef = useRef(null);
   // Function to group events by day
@@ -65,90 +68,76 @@ export default function HomePage() {
     return () => channel.unsubscribe();
   }, [fetchEvents]);
 
-  // Effect to update the current time line position
-  // useEffect(() => {
-  //   let animationFrameId;
-  //   const updateCurrentTimeLine = () => {
-  //     setCurrentTimePos(getCurrentTimeLinePosition());
-  //     animationFrameId = requestAnimationFrame(updateCurrentTimeLine);
-  //   };
-  //   updateCurrentTimeLine();
-  //   return () => cancelAnimationFrame(animationFrameId);
-  // }, []);
-
   // --- Smooth Auto-Scroll with requestAnimationFrame ---
   useEffect(() => {
-  const el = scrollRef.current;
-  if (!el) return;
-
-  let animationFrameId;
-  let timeoutId;
-  let isScrollingDown = true;
-  const scrollSpeed = 0.5; // შეგიძლია 0.05 ან ნაკლებიც
-  const pauseDuration = 2000;
-  let isPaused = true; // დავიწყოთ დაპაუზებული
-  let lastTimestamp = performance.now();
-  let scrollRemainder = 0;
-
-  const scrollStep = (timestamp) => {
-    const deltaTime = timestamp - lastTimestamp;
-    lastTimestamp = timestamp;
+    const el = scrollRef.current;
     if (!el) return;
 
-    if (!isPaused) {
-      const pixelChange = scrollSpeed * (deltaTime / 16); // approx. 60fps
-      scrollRemainder += pixelChange;
+    let animationFrameId;
+    let timeoutId;
+    let isScrollingDown = true;
+    const scrollSpeed = 0.5;
+    const pauseDuration = 2000;
+    let isPaused = true;
+    let lastTimestamp = performance.now();
+    let scrollRemainder = 0;
 
-      if (scrollRemainder >= 1) {
-        const moveBy = Math.floor(scrollRemainder);
-        scrollRemainder -= moveBy;
+    const scrollStep = (timestamp) => {
+      const deltaTime = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+      if (!el) return;
 
-        if (isScrollingDown) {
-          el.scrollTop += moveBy;
-          if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
-            isPaused = true;
-            timeoutId = setTimeout(() => {
-              isScrollingDown = false;
-              isPaused = false;
-              lastTimestamp = performance.now();
-              requestAnimationFrame(scrollStep);
-            }, pauseDuration);
-            return;
-          }
-        } else {
-          el.scrollTop -= moveBy;
-          if (el.scrollTop <= 0) {
-            isPaused = true;
-            timeoutId = setTimeout(() => {
-              isScrollingDown = true;
-              isPaused = false;
-              lastTimestamp = performance.now();
-              requestAnimationFrame(scrollStep);
-            }, pauseDuration);
-            return;
+      if (!isPaused) {
+        const pixelChange = scrollSpeed * (deltaTime / 16);
+        scrollRemainder += pixelChange;
+
+        if (scrollRemainder >= 1) {
+          const moveBy = Math.floor(scrollRemainder);
+          scrollRemainder -= moveBy;
+
+          if (isScrollingDown) {
+            el.scrollTop += moveBy;
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
+              isPaused = true;
+              timeoutId = setTimeout(() => {
+                isScrollingDown = false;
+                isPaused = false;
+                lastTimestamp = performance.now();
+                requestAnimationFrame(scrollStep);
+              }, pauseDuration);
+              return;
+            }
+          } else {
+            el.scrollTop -= moveBy;
+            if (el.scrollTop <= 0) {
+              isPaused = true;
+              timeoutId = setTimeout(() => {
+                isScrollingDown = true;
+                isPaused = false;
+                lastTimestamp = performance.now();
+                requestAnimationFrame(scrollStep);
+              }, pauseDuration);
+              return;
+            }
           }
         }
       }
-    }
 
-    animationFrameId = requestAnimationFrame(scrollStep);
-  };
+      animationFrameId = requestAnimationFrame(scrollStep);
+    };
 
-  // Start after initial pause
-  timeoutId = setTimeout(() => {
-    isPaused = false;
-    lastTimestamp = performance.now();
-    requestAnimationFrame(scrollStep);
-  }, pauseDuration);
+    // Start after initial pause
+    timeoutId = setTimeout(() => {
+      isPaused = false;
+      lastTimestamp = performance.now();
+      requestAnimationFrame(scrollStep);
+    }, pauseDuration);
 
-  return () => {
-    cancelAnimationFrame(animationFrameId);
-    clearTimeout(timeoutId);
-  };
-}, [Object.keys(eventsByDay).length]);
-
-
-
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearTimeout(timeoutId);
+    };
+  }, [Object.keys(eventsByDay).length]);
 
 
   const getTimeIndex = (date) => {
@@ -206,33 +195,10 @@ export default function HomePage() {
     });
     return layers;
   }
-  const getCurrentTimeLinePosition = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-    const totalMinutes = hour * 60 + minute;
-
-    const index = times.findIndex((t, i) => {
-      const [h, m] = t.split(':').map(Number);
-      const slotMin = h * 60 + m;
-      return totalMinutes >= slotMin && totalMinutes < slotMin + 30;
-    });
-
-    if (index === -1) return null;
-
-    const [startH, startM] = times[index].split(':').map(Number);
-    const slotStart = startH * 60 + startM;
-    const percent = ((totalMinutes - slotStart) / 30) * 100;
-
-    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()].slice(0, 3);
-
-    return { day, index, offsetPercent: percent };
-  };
-  const [currentTimePos, setCurrentTimePos] = useState(getCurrentTimeLinePosition());
 
   const createTimeSlotRows = (day, idx) => {
     const dayEvents = getEventsByDay(day);
-    const timeLine = getCurrentTimeLinePosition();
+    
     const isToday = () => {
       const today = new Date();
       const todayDay = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][today.getDay()].slice(0, 3);
@@ -245,18 +211,6 @@ export default function HomePage() {
       return [
         <tr key={`${day}_empty`} className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
           <td className="border px-1 py-1 font-bold text-xs text-blue-800 sticky left-0 bg-white z-10 whitespace-nowrap">{day}</td>
-          {times.map((_, i) => (
-            <td key={i} className="relative border px-1 py-1">
-              {currentTimePos &&
-                currentTimePos.day === day &&
-                currentTimePos.index === i && (
-                  <div
-                    className="absolute left-0 right-0 h-[2px] bg-red-500 z-10"
-                    style={{ top: `${currentTimePos.offsetPercent}%` }}
-                  />
-                )}
-            </td>
-          ))}
         </tr>
       ];
     }
@@ -277,9 +231,9 @@ export default function HomePage() {
             className="border px-1 py-1 align-top"
             colSpan={event.duration}
           >
-            <div className={`p-1 rounded shadow text-[10px] ${event.extendedProps.rescheduled ? 'bg-brand-yellow border-yellow-200' : 'bg-white border-blue-200'} border`}>
+            <div className={`p-2 rounded shadow-md text-xs ${event.extendedProps.rescheduled ? 'bg-brand-yellow border-yellow-200' : 'bg-white border-gray-300'} border`}>
               <div className="font-semibold text-blue-900">{event.title}</div>
-              <div className="text-gray-700">{event.shortTime} <span className="text-gray-500 text-[9px]">({event.dayOfWeek})</span></div>
+              <div className="text-gray-700">{event.shortTime} <span className="text-xs">({event.dayOfWeek})</span></div>
               {event.extendedProps?.room && <div className="text-red-700">Rm: {event.extendedProps.room}</div>}
               {event.extendedProps?.professor && <div className="italic text-gray-600">{event.extendedProps.professor}</div>}
             </div>
@@ -297,7 +251,7 @@ export default function HomePage() {
               rowSpan={layers.length}
               className={`px-1 py-1 font-bold text-xs sticky left-0 z-10 
                 whitespace-nowrap align-middle 
-                ${isCurrentDay ? 'border-red-500 border-l-2 border-r-2 bg-white text-red-700'
+                ${isCurrentDay ? 'border-red-500 border-r-2 bg-white text-red-700'
                   : idx % 2 === 0 ? 'bg-gray-50 text-blue-800' :
                     'border-blue-100 bg-white text-blue-800'}`}
             >
@@ -316,15 +270,16 @@ export default function HomePage() {
 
   return (
     <div className="p-4 bg-white min-h-screen flex flex-col">
-      <h2 className="text-center text-lg font-bold text-blue-900 mb-4"> {getCurrentWeekRange()} (Weekly Schedule)</h2>
+      <h2 className="text-center text-lg font-bold text-blue-900 mb-4 font-mono"> {getCurrentWeekRange()} (Weekly Schedule)</h2>
       <div className="max-h-[calc(100vh-5rem)] overflow-y-auto overflow-x-hidden" ref={scrollRef}>
-        <table className="w-full border-collapse text-[10px] table-fixed ">
+        <table className="w-full border-separate border-spacing-0 text-xs table-fixed ">
           <thead className="sticky top-0 bg-gray-100 z-20">
             <tr>
               <th className="sticky left-0 border px-2 py-1 text-left w-[35px]">Day</th>
               {times.map(time => (
-                <th key={time} className="border px-2 py-1 text-center">{time}</th>
-              ))}
+                <th key={time} className={`px-2 py-1 text-center ${currentSlot === time ? 'border-b-2 border-red-500' : ''}`}>{time}</th>
+              )
+              )}
             </tr>
           </thead>
           <tbody>

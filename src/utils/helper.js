@@ -56,5 +56,15 @@ export function getCurrentWeekRange() {
 
   return `${month} ${startDay} – ${endDay}, ${year}`;
 }
+export const currentInterval = (time) => {
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const startH = time.split(':').map(Number)[0];
+  const endH = time.split(':').map(Number)[0]+1;
 
-console.log(getCurrentWeekRange());
+  const startMinutes = startH * 60;
+  const endMinutes = endH * 60;
+
+  return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+
+}
