@@ -6,18 +6,10 @@ import { getAllData } from './api/semester/route';
 import Loader from './components/loader';
 import { getCurrentWeekRange } from '@/utils/helper';
 import { useCurrentTimeSlot } from '@/utils/useCurrentTimeSlot';
+import { times, days } from '@/utils/constants';
 import './calendar.css';
 import './globals.css';
 
-
-
-const times = [
-  '09:00', '10:00', '11:00', '12:00',
-  '13:00', '14:00', '15:00', '16:00',
-  '17:00', '18:00'
-];
-
-const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function HomePage() {
   const [eventsByDay, setEventsByDay] = useState({});
@@ -50,7 +42,6 @@ export default function HomePage() {
       console.error('Failed to fetch semesters:', err);
       setServerOffline(true);
     }
-
   }, []);
   // Fetch events on mount and subscribe to changes
   // This will keep the schedule updated in real-time.
@@ -141,20 +132,29 @@ export default function HomePage() {
 
 
   const getTimeIndex = (date) => {
-    const hour = date.getHours();
-    const min = date.getMinutes();
-    const slot = `${String(hour).padStart(2, '0')}:${min < 30 ? '00' : '30'}`;
-    return times.indexOf(slot);
-  };
+  const hour = date.getHours();
+  return times.indexOf(`${String(hour).padStart(2, '0')}:00`);
+};
 
-  const getEventSpan = (start, end) => {
-    const startIdx = getTimeIndex(start);
-    const endIdx = getTimeIndex(end);
-    return {
-      startIdx,
-      duration: Math.max(endIdx - startIdx, 0.5) // Ensure at least half-cell width
-    };
-  };
+const getEventSpan = (start, end) => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const startHour = startDate.getHours();
+  const startMinutes = startDate.getMinutes();
+  const endHour = endDate.getHours();
+  const endMinutes = endDate.getMinutes();
+
+  const startIdx = getTimeIndex(startDate);
+
+  let duration =
+    (endHour * 60 + endMinutes - (startHour * 60 + startMinutes)) / 60;
+
+  duration = Math.max(duration, 0.5);
+
+  return { startIdx, duration };
+};
+
 
   const getEventsByDay = (day) => {
     const dayEvents = eventsByDay[day] || [];
@@ -275,9 +275,9 @@ export default function HomePage() {
         <table className="w-full border-separate border-spacing-0 text-xs table-fixed ">
           <thead className="sticky top-0 bg-gray-100 z-20">
             <tr>
-              <th className="sticky left-0 border px-2 py-1 text-left w-[35px]">Day</th>
+              <th className="sticky left-0 px-2 py-1  w-[35px]">Day</th>
               {times.map(time => (
-                <th key={time} className={`px-2 py-1 text-center ${currentSlot === time ? 'border-b-2 border-red-500' : ''}`}>{time}</th>
+                <th key={time} className={`px-2 py-1 border-r-[1px] text-right ${currentSlot === time ? 'border-b-2 border-red-500' : 'border-gray'}`}>{time}</th>
               )
               )}
             </tr>
