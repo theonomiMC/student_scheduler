@@ -1,6 +1,29 @@
 import { supabase } from '@/lib/supabaseClient';
 import { getIsoStringForWeekday } from '@/utils/helper';
 
+export async function getAllData(num) {
+  const { data, error } = await supabase.from('schedule').select('*');
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return data.filter(event => event.start && event.end).map(event => ({
+    id: event.id,
+    title: event?.title,
+    start: getIsoStringForWeekday(event?.day_of_week, event?.start),
+    end: getIsoStringForWeekday(event?.day_of_week, event?.end),
+    extendedProps: {
+      professor: event.professor,
+      room: event.room,
+      semester: event.semester,
+      // status: event.status,
+      semester: event.semester,
+      rescheduled: event.rescheduled
+    }
+  }));
+}
+
 export async function getSemester(num) {
   const { data, error } = await supabase.from('schedule').select('*').eq('semester', num);
 

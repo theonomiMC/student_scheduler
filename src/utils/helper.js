@@ -32,3 +32,29 @@ export const getMondayOfCurrentWeek = () => {
   monday.setHours(0, 0, 0, 0); // Set to start of day for consistency
   return monday;
 };
+
+export function getCurrentWeekRange() {
+  const today = new Date();
+
+  // Get current day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const dayOfWeek = today.getDay();
+  const year = today.getFullYear();
+
+  // Calculate Monday of the current week (adjust if Sunday)
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diffToMonday);
+
+  // Calculate Sunday (end of the week)
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  // Format: 16–22 June
+  const startDay = monday.getDate();
+  const endDay = sunday.getDate();
+  const month = monday.toLocaleString('default', { month: 'long' });
+
+  return `${month} ${startDay} – ${endDay}, ${year}`;
+}
+
+console.log(getCurrentWeekRange());

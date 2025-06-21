@@ -16,6 +16,8 @@
 .calendar-wrapper {
     flex: 1;
     min-height: 0;
+    overflow-x: auto;
+    
 }
 
 .fc .fc-scroller .fc-scroller-liquid-absolute {
@@ -107,8 +109,9 @@
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
-    white-space: normal;
+    white-space: no-wrap;
     padding-left: 8px;
+
 
 
 }
@@ -281,47 +284,68 @@
     left: 43px;
     border-style: solid;
 }
+
 /* ===== Main Scrollbar Styles ===== */
 /* Applies to all scrollable FullCalendar containers */
 .fc-scroller,
 .fc .fc-timegrid-body,
 .fc .fc-daygrid-body {
-  overflow-y: auto !important;
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #dde0e5 #f1f5f9; /* Firefox */
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: #dde0e5 #f1f5f9;
+    /* Firefox */
 }
 
 /* WebKit Scrollbars (Chrome, Safari, Edge) */
 .fc-scroller::-webkit-scrollbar,
 .fc .fc-timegrid-body::-webkit-scrollbar,
 .fc .fc-daygrid-body::-webkit-scrollbar {
-  width: 1px;
-  height: 1px;
+    width: 1px;
+    height: 1px;
 }
 
 .fc-scroller::-webkit-scrollbar-thumb,
 .fc .fc-timegrid-body::-webkit-scrollbar-thumb,
 .fc .fc-daygrid-body::-webkit-scrollbar-thumb {
-  background: #dde0e5;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background-clip: content-box;
-  transition: background-color 0.2s;
+    background: #dde0e5;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-clip: content-box;
+    transition: background-color 0.2s;
 }
 
 .fc-scroller::-webkit-scrollbar-thumb:hover,
 .fc .fc-timegrid-body::-webkit-scrollbar-thumb:hover,
 .fc .fc-daygrid-body::-webkit-scrollbar-thumb:hover {
-  background: #dde0e5;
+    background: #dde0e5;
 }
 
 .fc-scroller::-webkit-scrollbar-track,
 .fc .fc-timegrid-body::-webkit-scrollbar-track,
 .fc .fc-daygrid-body::-webkit-scrollbar-track {
-  background: #dde0e5;
-  border-radius: 10px;
+    background: #dde0e5;
+    border-radius: 10px;
 }
 
-/* ===== Mobile Optimization ===== */
+/* ===== Overlapped Events ===== */
+.fc-timegrid-event {
+    font-size: 10px !important;
+    padding: 1px 2px !important;
+    line-height: 1.1 !important;
+    white-space: normal !important;
+    display: block !important;
+    flex-shrink: no;
+    overflow-wrap: break-word;
+   
+}
 
-
+/* Optional global or scoped CSS */
+/* .timeline-line {
+  height: 2px;
+  background-color: red;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+} */
