@@ -184,7 +184,7 @@ export default function ScheduleTable({ eventsByDay, currentSlot }) {
                     {layerIdx === 0 && (
                         <td
                             rowSpan={layers.length}
-                            className={`px-1 py-1 font-bold text-xs sticky left-0 z-10 whitespace-nowrap align-middle ${isCurrentDay ? 'border-red-500 border-r-2 bg-white text-red-700'
+                            className={`px-1 py-1 font-bold text-xs sticky left-0 z-10 whitespace-nowrap align-middle ${isCurrentDay ? 'bg-[#e31010] text-white'
                                 : idx % 2 === 0 ? 'bg-gray-50 text-blue-800'
                                     : 'border-blue-100 bg-white text-blue-800'
                                 }`}
@@ -207,7 +207,7 @@ export default function ScheduleTable({ eventsByDay, currentSlot }) {
                         <tr>
                             <th className="sticky left-0 px-2 py-1 w-[35px]">Day</th>
                             {times.map(time => (
-                                <th key={time} className={`px-2 py-1 border-r-[1px] text-right ${currentSlot === time ? 'border-b-2 border-b-red-500' : ''}`}>{time}</th>
+                                <th key={time} className={`px-2 py-1 border-r-[1px] text-right ${currentSlot === time ? 'bg-[#e31010] text-white' : ''}`}>{time}</th>
                             ))}
                         </tr>
                     </thead>
