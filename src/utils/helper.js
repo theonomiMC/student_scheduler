@@ -58,13 +58,14 @@ export function getCurrentWeekRange() {
 }
 export const currentInterval = (time) => {
   const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  // const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const currentHour = now.getHours()
   const startH = time.split(':').map(Number)[0];
   const endH = time.split(':').map(Number)[0]+1;
 
-  const startMinutes = startH * 60;
-  const endMinutes = endH * 60;
-
-  return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  // const startMinutes = startH * 60;
+  // const endMinutes = endH * 60;
+  return currentHour>=startH && currentHour<endH
+  // return currentMinutes >= startMinutes && currentMinutes < endMinutes;
 
 }
