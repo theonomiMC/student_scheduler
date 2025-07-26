@@ -30,7 +30,7 @@ export default function LoginPage() {
     <div className="h-screen flex flex-col">
       <Header />
       {/* Login Form */}
-      <div className="flex-grow flex items-center justify-center font-mono px-4">
+      <div className="flex-grow flex items-center justify-center px-4">
         <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
           <h2 className="text-[1.1rem] mb-4 text-blue-950">Admin Login</h2>
 
@@ -38,7 +38,8 @@ export default function LoginPage() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-2 border mb-2 outline-none"
+            className="w-full p-2 border mb-2 outline-none 
+           text-bblue"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -47,7 +48,8 @@ export default function LoginPage() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full p-2 border mb-4 outline-none"
+            className="w-full p-2 border mb-4 outline-none
+            text-bblue"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -56,10 +58,16 @@ export default function LoginPage() {
           <button
             onClick={handleLogin}
             type="submit"
-            className="bg-brand-yellow text-blue-800 font-medium px-5 py-2 flex items-center justify-center gap-2 rounded-md shadow-sm hover:shadow-md transition duration-150"
+            className="bg-[#8b0015]
+             text-white font-medium 
+             f
+             px-5 py-2 flex items-center 
+             justify-center gap-2 
+             rounded-md shadow-sm 
+             hover:bg-[#ab0520] transition duration-150"
           >
-            <LockKeyhole size={16} className="text-blue-800 relative top-[-3px]" />
-            Login
+            <LockKeyhole size={16} className="relative top-[-3px]" />
+            LOGIN
           </button>
           {/* Error Message */}
           {error && <p className="text-red-600 mt-2">{error}</p>}

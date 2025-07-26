@@ -168,7 +168,7 @@ export default function ScheduleTable({ eventsByDay, currentSlot }) {
                         <div className={`p-2 rounded shadow-md text-xs ${event.extendedProps.rescheduled ? 'bg-brand-yellow border-yellow-200' : 'bg-white border-gray-300'} border`}>
                             <div className="font-semibold text-blue-900">{event.title}</div>
                             <div className="text-gray-700">{event.shortTime} <span className="text-xs">({event.dayOfWeek})</span></div>
-                            {event.extendedProps?.room && <div className="text-red-700">Rm: {event.extendedProps.room}</div>}
+                            {event.extendedProps?.room && <div className="text-bred">R: {event.extendedProps.room}</div>}
                             {event.extendedProps?.professor && <div className="italic text-gray-600">{event.extendedProps.professor}</div>}
                         </div>
                     </td>
@@ -200,7 +200,7 @@ export default function ScheduleTable({ eventsByDay, currentSlot }) {
 
     return (
         <div className="p-4 bg-white min-h-screen flex flex-col">
-            <h2 className="text-center text-lg font-bold text-blue-900 mb-4 font-mono">{getCurrentWeekRange()} (Weekly Schedule)</h2>
+            <h2 className="text-center text-lg font-[montserrat] font-bold text-blue-900 mb-4 tracking-wide">{getCurrentWeekRange()} (Weekly Schedule)</h2>
             <div className="max-h-[calc(100vh-5rem)] overflow-y-auto overflow-x-hidden" ref={scrollRef}>
                 <table className="w-full border-separate border-spacing-0 text-xs table-fixed">
                     <thead className="sticky top-0 bg-gray-100 z-20">

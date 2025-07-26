@@ -19,17 +19,12 @@ export default function Header() {
                         priority
                     />
                 </div>
-                <h1 className="font-extrabold text-blue-950 m-0 sm:hidden text-[1.1rem]">EAST - WEST UNIVERSITY</h1>
+                <h1 className="font-extrabold font-[montserrat] text-bred m-0 sm:hidden text-[1.1rem]">EAST - WEST UNIVERSITY</h1>
             </Link>
             {/* Subheading */}
-            <h2 className="text-[1rem] sm:text-lg font-light text-gray-600 tracking-wide">
-                Student Class Schedule
+            <h2 className="text-[1rem] font-[montserrat] sm:text-lg text-bblue tracking-wide weight-semibold">
+                Student Class Schedule for Semesters<span className="font-semibold text-[#8b0015]"> I–VI</span>
             </h2>
-
-            {/* Semester Info */}
-            <p className="text-[0.87rem] sm:text-sm text-[#0f395d] font-medium tracking-wide">
-                for <span className="font-semibold">Semesters I–VI</span>
-            </p>
         </div>
     )
 

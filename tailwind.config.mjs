@@ -7,12 +7,19 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        montserrat: ['Montserrat', 'sans-serif'],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
         'brand-yellow': '#ffd600',
-        'bg-yellow':'#fee83d'
+        'bblue': '#0c234b',
+        'bred': '#8b0015',
+        'bg-yellow':'#fee83d',
+
       },
+      
     },
   },
   plugins: [],
