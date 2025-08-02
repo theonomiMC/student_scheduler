@@ -10,13 +10,13 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent, getAllSemesters } from '../api/semester/route';
-import { getMondayOfCurrentWeek } from '@/utils/helper';
+import { getMondayOfCurrentWeek, sanitizer } from '@/utils/helper';
 import EventForm from '../components/input';
 import Loader from '../components/loader';
 import EventToolbar from '../components/toolbar';
+import { PencilIcon } from 'lucide-react';
 import '../calendar.css';
 import '../globals.css';
-import { Pencil, PencilIcon } from 'lucide-react';
 
 export default function EditPage() {
     const [events, setEvents] = useState([]);
@@ -26,7 +26,7 @@ export default function EditPage() {
     const [semesters, setSemesters] = useState([]);
     const [currentSemester, setCurrentSemester] = useState(1);
     const [showForm, setShowForm] = useState(false);
-    const [_, setSemesterIndex] = useState(0);
+    
     const [serverOffline, setServerOffline] = useState(false)
 
     const mondayInitialDate = getMondayOfCurrentWeek();
@@ -57,22 +57,6 @@ export default function EditPage() {
             subscription.unsubscribe();
         };
     }, [router]);
-
-    // Fetch all semesters at once.
-    const fetchAllSemesters = useCallback(async () => {
-        try {
-            const grouped = await getAllSemesters();
-            semesterCache.current = grouped;
-
-            if (grouped[currentSemester]) {
-                setEvents(grouped[currentSemester]);
-            }
-            setServerOffline(false)
-        } catch (err) {
-            console.error('Failed to fetch all semesters:', err);
-            setServerOffline(true)
-        }
-    }, [currentSemester]);
 
     // Fetch semester list from DB
     useEffect(() => {
@@ -182,12 +166,12 @@ export default function EditPage() {
                     </div>
                 )}
                 <div className="fc-event-title font-medium text-sm text-gray-800 text-pretty">
-                    {title || ''}
+                    {sanitizer(title) || ''}
                 </div>
                 {(room || professor) && (
                     <div className="text-xs text-gray-600 flex flex-col mt-0.5">
-                        {room && <span className="fc-event-room text-bred font-medium">Rm: {room}</span>}
-                        {professor && <span className="hidden sm:inline text-[0.975em] text-blue-800 italic">({professor})</span>}
+                        {room && <span className="fc-event-room text-bred font-medium">Rm: {sanitizer(room)}</span>}
+                        {professor && <span className="hidden sm:inline text-[0.975em] text-blue-800 italic">({sanitizer(professor)})</span>}
                     </div>
                 )}
             </div>

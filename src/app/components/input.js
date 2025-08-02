@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { insertEvent, updateEvent } from "../api/semester/route";
+import { sanitizer } from "@/utils/helper";
 
 export default function EventForm({ onSave, existingEvent }) {
     const [formData, setFormData] = useState({
@@ -52,21 +53,35 @@ export default function EventForm({ onSave, existingEvent }) {
             alert("Start time must be earlier than end time.");
             return;
         }
+        const normilizedTitle = sanitizer(formData.title);
+        const normilizedRoom = sanitizer(formData.room);
+        const normilizedProfessor = sanitizer(formData.professor);
+        // if (!normilizedRoom) {
+        //     alert("Enter correct Room!");
+        //     return;
+        // }
+        // if (!normilizedProfessor) {
+        //     alert("Enter correct Professor!");
+        //     return;
+        // }
+        // if (!normilizedTitle) {
+        //     alert("Enter correct Title!");
+        //     return;
+        // }
         const newEvent = {
-            title: formData.title,
+            title: normilizedTitle,
             start: formData.startTime,
             day_of_week: parseInt(formData.day_of_week),
             end: formData.endTime,
             semester: parseInt(formData.semester),
-            room: formData.room,
-            professor: formData.professor,
-            // semester,
+            room: normilizedRoom,
+            professor: normilizedProfessor,
             rescheduled: formData.rescheduled !== undefined ? formData.rescheduled : false,
         };
         let editedEvent = {
-            title: formData.title,
-            room: formData.room,
-            professor: formData.professor,
+            title: normilizedTitle,
+            room: normilizedRoom,
+            professor: normilizedProfessor,
             semester: formData.semester,
             rescheduled: formData.rescheduled !== undefined ? formData.rescheduled : false,
         };

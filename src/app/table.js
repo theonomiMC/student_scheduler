@@ -275,7 +275,7 @@ const SemesterTable = ({ events = [], semesterNumber }) => {
                 })
               }}
             >
-              hhhhhhhhhhhhhhhh
+           
               <div className="h-full flex flex-col overflow-hidden max-h-full" style={{ fontSize }}>
                 <div className="font-bold text-gray-900 leading-none mb-0.5">
                   {event.startTime} - {event.endTime}

@@ -60,12 +60,59 @@ export const currentInterval = (time) => {
   const now = new Date();
   // const currentMinutes = now.getHours() * 60 + now.getMinutes();
   const currentHour = now.getHours()
-  const startH = time.split(':').map(Number)[0]-1;
+  const startH = time.split(':').map(Number)[0] - 1;
   const endH = time.split(':').map(Number)[0];
 
   // const startMinutes = startH * 60;
   // const endMinutes = endH * 60;
-  return currentHour>=startH && currentHour<endH
+  return currentHour >= startH && currentHour < endH
   // return currentMinutes >= startMinutes && currentMinutes < endMinutes;
 
+}
+function escapeHtml(unsafe) {
+  return unsafe
+    // .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+  // .replace(/'/g, "&#039;");
+}
+export const sanitizer = (val) => {
+  // Handle all empty/null values consistently at the start.
+  if (val === null || val === undefined || (typeof val === 'string' && val.trim() === '')) {
+    return null;
+  }
+
+  // Process strings.
+  if (typeof val === 'string') {
+    const trimmedVal = val.trim();
+
+    // Enforce the length constraint after trimming.
+    if (trimmedVal.length >= 100) {
+      return null;
+    }
+
+    // Handle any number of spaces and correctly convert to Title Case.
+    const titleCasedVal = trimmedVal
+      .split(/\s+/) // Splits by one or more spaces
+      .map(word => {
+        if (word.length === 0) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(' ');
+
+    // *** THE SANITIZATION STEP IS ADDED HERE ***
+    // We escape the string before returning to prevent XSS.
+    const sanitizedVal = escapeHtml(titleCasedVal);
+
+    return sanitizedVal;
+  }
+
+  // Process numbers.
+  if (typeof val === 'number') {
+    return val;
+  }
+
+  // Return null for any other unexpected data types.
+  return null;
 }

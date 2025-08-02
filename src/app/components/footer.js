@@ -14,7 +14,7 @@ export default function Footer() {
           >
             GitHub
           </a>
-          <a href="https://ewuni.edu.ge/en/" className="hover:text-bred transition">East West University</a>
+          <a href="https://ewuni.edu.ge" target="_blank" className="hover:text-bred transition">East West University</a>
         </div>
       </div>
     </footer>
