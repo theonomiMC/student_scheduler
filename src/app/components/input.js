@@ -56,18 +56,7 @@ export default function EventForm({ onSave, existingEvent }) {
         const normilizedTitle = sanitizer(formData.title);
         const normilizedRoom = sanitizer(formData.room);
         const normilizedProfessor = sanitizer(formData.professor);
-        // if (!normilizedRoom) {
-        //     alert("Enter correct Room!");
-        //     return;
-        // }
-        // if (!normilizedProfessor) {
-        //     alert("Enter correct Professor!");
-        //     return;
-        // }
-        // if (!normilizedTitle) {
-        //     alert("Enter correct Title!");
-        //     return;
-        // }
+       
         const newEvent = {
             title: normilizedTitle,
             start: formData.startTime,
@@ -109,15 +98,7 @@ export default function EventForm({ onSave, existingEvent }) {
         }
     };
     const handleCancelEdit = () => {
-        // setFormData({
-        //     title: "",
-        //     day_of_week: 1,
-        //     startTime: "",
-        //     endTime: "",
-        //     room: "",
-        //     professor: "",
-        //     rescheduled: false,
-        // })
+       
         if (onSave) {
             onSave();
         }

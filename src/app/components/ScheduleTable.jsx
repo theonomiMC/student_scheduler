@@ -7,74 +7,79 @@ export default function ScheduleTable({ eventsByDay, currentSlot }) {
     const scrollRef = useRef(null);
     
     // Auto-scroll effect
-    useEffect(() => {
-        const el = scrollRef.current;
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let animationFrameId;
+    let timeoutId;
+    const scrollSpeed = 0.5;      // pixels per frame
+    const pauseDuration = 2000;   // pause before jump and after jump
+    let isPaused = true;
+    let lastTimestamp = performance.now();
+    let scrollRemainder = 0;
+
+    const fadeOut = () => {
+    el.style.transition = "opacity 0.2s linear";
+    el.style.opacity = "0.7"; // not fully invisible
+};
+
+const fadeIn = () => {
+    el.style.transition = "opacity 0.2s linear";
+    el.style.opacity = "1";
+};
+
+    const scrollStep = (timestamp) => {
+        const deltaTime = timestamp - lastTimestamp;
+        lastTimestamp = timestamp;
         if (!el) return;
 
-        let animationFrameId;
-        let timeoutId;
-        let isScrollingDown = true;
-        const scrollSpeed = 0.5;
-        const pauseDuration = 2000;
-        let isPaused = true;
-        let lastTimestamp = performance.now();
-        let scrollRemainder = 0;
+        if (!isPaused) {
+            const pixelChange = scrollSpeed * (deltaTime / 16);
+            scrollRemainder += pixelChange;
 
-        const scrollStep = (timestamp) => {
-            const deltaTime = timestamp - lastTimestamp;
-            lastTimestamp = timestamp;
-            if (!el) return;
+            if (scrollRemainder >= 1) {
+                const moveBy = Math.floor(scrollRemainder);
+                scrollRemainder -= moveBy;
 
-            if (!isPaused) {
-                const pixelChange = scrollSpeed * (deltaTime / 16);
-                scrollRemainder += pixelChange;
+                el.scrollTop += moveBy;
 
-                if (scrollRemainder >= 1) {
-                    const moveBy = Math.floor(scrollRemainder);
-                    scrollRemainder -= moveBy;
+                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
+    isPaused = true;
+    timeoutId = setTimeout(() => {
+        fadeOut();
+        setTimeout(() => {
+            el.scrollTop = 0; // jump
+            fadeIn();
+            setTimeout(() => {
+                isPaused = false;
+                lastTimestamp = performance.now();
+                requestAnimationFrame(scrollStep);
+            }, pauseDuration);
+        }, 250); // quick fade-out
+    }, pauseDuration);
+    return;
+}
 
-                    if (isScrollingDown) {
-                        el.scrollTop += moveBy;
-                        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
-                            isPaused = true;
-                            timeoutId = setTimeout(() => {
-                                isScrollingDown = false;
-                                isPaused = false;
-                                lastTimestamp = performance.now();
-                                requestAnimationFrame(scrollStep);
-                            }, pauseDuration);
-                            return;
-                        }
-                    } else {
-                        el.scrollTop -= moveBy;
-                        if (el.scrollTop <= 0) {
-                            isPaused = true;
-                            timeoutId = setTimeout(() => {
-                                isScrollingDown = true;
-                                isPaused = false;
-                                lastTimestamp = performance.now();
-                                requestAnimationFrame(scrollStep);
-                            }, pauseDuration);
-                            return;
-                        }
-                    }
-                }
             }
+        }
 
-            animationFrameId = requestAnimationFrame(scrollStep);
-        };
+        animationFrameId = requestAnimationFrame(scrollStep);
+    };
 
-        timeoutId = setTimeout(() => {
-            isPaused = false;
-            lastTimestamp = performance.now();
-            requestAnimationFrame(scrollStep);
-        }, pauseDuration);
+    // initial start after pause
+    timeoutId = setTimeout(() => {
+        isPaused = false;
+        lastTimestamp = performance.now();
+        requestAnimationFrame(scrollStep);
+    }, pauseDuration);
 
-        return () => {
-            cancelAnimationFrame(animationFrameId);
-            clearTimeout(timeoutId);
-        };
-    }, [Object.keys(eventsByDay).length]);
+    return () => {
+        cancelAnimationFrame(animationFrameId);
+        clearTimeout(timeoutId);
+    };
+}, [Object.keys(eventsByDay).length]);
+
 
     const groupOverlappingEvents = (events) => {
         const layers = [];
