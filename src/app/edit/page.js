@@ -180,7 +180,7 @@ export default function EditPage() {
 
     // Reset rescheduled events for all semesters
     const handleResetRescheduled = async () => {
-        stopAutoplay()
+        // stopAutoplay()
         const confirmed = confirm('Reset all rescheduled events?');
         if (!confirmed) {
             return;

@@ -173,7 +173,7 @@ const fadeIn = () => {
                         <div className={`p-2 rounded shadow-md text-xs ${event.extendedProps.rescheduled ? 'bg-brand-yellow border-yellow-200' : 'bg-white border-gray-300'} border`}>
                             <div className="font-semibold text-blue-900">{event.title}</div>
                             <div className="text-gray-700">{event.shortTime} <span className="text-xs">({event.dayOfWeek})</span></div>
-                            {event.extendedProps?.room && <div className="text-bred">R: {event.extendedProps.room}</div>}
+                            {event.extendedProps?.room && <div className="text-red-700">R: {event.extendedProps.room}</div>}
                             {event.extendedProps?.professor && <div className="italic text-gray-600">{event.extendedProps.professor}</div>}
                         </div>
                     </td>
@@ -210,9 +210,9 @@ const fadeIn = () => {
                 <table className="w-full border-separate border-spacing-0 text-xs table-fixed">
                     <thead className="sticky top-0 bg-gray-100 z-20">
                         <tr>
-                            <th className="sticky left-0 px-2 py-1 w-[35px]">Day</th>
+                            <th className="sticky left-0 px-2 py-1 w-[35px]"></th>
                             {times.map(time => (
-                                <th key={time} className={`px-2 py-1 border-r-[1px] text-right ${currentSlot === time ? 'bg-[#e31010] text-white' : ''}`}>{time}</th>
+                                <th key={time} className={`px-2 py-1 border-r-[1px] text-left ${currentSlot === time ? 'bg-[#e31010] text-white' : ''}`}>{time}</th>
                             ))}
                         </tr>
                     </thead>
