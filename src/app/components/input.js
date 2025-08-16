@@ -116,9 +116,9 @@ export default function EventForm({ onSave, existingEvent }) {
                     )
                 })}
             </select>
-            <input type="time" name="startTime" min="09:00" max="18:00" value={formData.startTime} onChange={handleChange} className="input" required={!!existingEvent} disabled={!!existingEvent} />
+            <input type="time" name="startTime" min="09:00" max="21:00" value={formData.startTime} onChange={handleChange} className="input" required={!!existingEvent} disabled={!!existingEvent} />
             <input type="time"
-                min="09:00" max="18:00"
+                min="09:00" max="21:00"
                 name="endTime" value={formData.endTime} onChange={handleChange} className="input" required={!!existingEvent} disabled={!!existingEvent} />
             <input type="text" name="room" placeholder="Room" value={formData.room} onChange={handleChange} className="input" />
             <input type="text" name="professor" placeholder="Professor" value={formData.professor} onChange={handleChange} className="input" />
