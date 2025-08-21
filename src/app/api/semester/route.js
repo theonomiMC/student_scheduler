@@ -39,6 +39,7 @@ export async function getSemester(num) {
     extendedProps: {
       professor: event.professor,
       room: event.room,
+      day_of_week: event.day_of_week, // Ensure day_of_week is included
       // status: event.status,
       semester: event.semester,
       rescheduled: event.rescheduled

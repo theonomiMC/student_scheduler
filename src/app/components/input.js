@@ -16,9 +16,11 @@ export default function EventForm({ onSave, existingEvent }) {
     });
     useEffect(() => {
         if (existingEvent) {
+         
             setFormData((prev) => ({
                 ...prev,
                 title: existingEvent?.title || "",
+                day_of_week: existingEvent?.extendedProps?.day_of_week || 1, // Default to Monday
                 semester: existingEvent?.extendedProps?.semester,
                 room: existingEvent.extendedProps?.room || "",
                 professor: existingEvent.extendedProps?.professor || "",
@@ -72,6 +74,7 @@ export default function EventForm({ onSave, existingEvent }) {
             room: normilizedRoom,
             professor: normilizedProfessor,
             semester: formData.semester,
+            day_of_week: parseInt(formData.day_of_week), // Ensure day_of_week is an integer
             rescheduled: formData.rescheduled !== undefined ? formData.rescheduled : false,
         };
         if (existingEvent?.id) {
@@ -103,10 +106,13 @@ export default function EventForm({ onSave, existingEvent }) {
             onSave();
         }
     }
+   
     return (
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 max-w-2xl mx-auto p-4 bg-white shadow-md rounded-lg">
             <input type="text" name="title" placeholder="Title" value={formData.title} onChange={handleChange} className="input" required />
-            <select name="day_of_week" value={formData.day_of_week} onChange={handleChange} className="input" disabled={!!existingEvent}>
+            <select name="day_of_week" value={formData.day_of_week} onChange={handleChange} className="input"
+            //  disabled={!!existingEvent}
+             >
                 {[1, 2, 3, 4, 5, 6].map((s) => {
                     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                     return (
@@ -116,9 +122,11 @@ export default function EventForm({ onSave, existingEvent }) {
                     )
                 })}
             </select>
-            <input type="time" name="startTime" min="09:00" max="21:00" value={formData.startTime} onChange={handleChange} className="input" required={!!existingEvent} disabled={!!existingEvent} />
+            <input type="time" name="startTime" min="09:00"
+             max="19:00" value={formData.startTime} onChange={handleChange}
+              className="input" required={!!existingEvent} disabled={!!existingEvent} />
             <input type="time"
-                min="09:00" max="21:00"
+                min="11:00" max="20:00"
                 name="endTime" value={formData.endTime} onChange={handleChange} className="input" required={!!existingEvent} disabled={!!existingEvent} />
             <input type="text" name="room" placeholder="Room" value={formData.room} onChange={handleChange} className="input" />
             <input type="text" name="professor" placeholder="Professor" value={formData.professor} onChange={handleChange} className="input" />

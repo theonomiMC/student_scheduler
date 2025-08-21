@@ -112,7 +112,7 @@ export const sanitizer = (val) => {
   if (typeof val === 'number') {
     return val;
   }
-
+console.log(titleCasedVal)
   // Return null for any other unexpected data types.
   return null;
 }

@@ -227,7 +227,7 @@ export default function EditPage() {
                                 initialDate={mondayInitialDate}
                                 initialView="timeGridWeek"
                                 slotMinTime="09:00:00"
-                                slotMaxTime="21:50:00"
+                                slotMaxTime="21:00:00"
                                 height="100%"
                                 expandRows={true}
                                 allDaySlot={false}
