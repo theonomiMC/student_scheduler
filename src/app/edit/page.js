@@ -7,30 +7,38 @@ const FullCalendar = dynamic(() => import('@fullcalendar/react'), {
 import { supabase } from '@/lib/supabaseClient';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent, getAllSemesters } from '../api/semester/route';
+import { getSemester, resetRescheduledEvents, handleEventDrop, deleteEvent, fetchTitles, getAvailableRooms } from '../api/semester/route';
 import { getMondayOfCurrentWeek, sanitizer } from '@/utils/helper';
 import EventForm from '../components/input';
 import Loader from '../components/loader';
 import EventToolbar from '../components/toolbar';
-import { PencilIcon } from 'lucide-react';
+import { PencilIcon, TriangleAlert } from 'lucide-react';
 import '../calendar.css';
 import '../globals.css';
 
 export default function EditPage() {
     const [events, setEvents] = useState([]);
     const [user, setUser] = useState(null);
+    const [availableTitles, setAvailableTitles] = useState([]);
+
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     const [semesters, setSemesters] = useState([]);
     const [currentSemester, setCurrentSemester] = useState(1);
     const [showForm, setShowForm] = useState(false);
-    
+
     const [serverOffline, setServerOffline] = useState(false)
 
     const mondayInitialDate = getMondayOfCurrentWeek();
     const router = useRouter();
+
+    useEffect(() => {
+        const data = fetchTitles();
+        data.then(titles => setAvailableTitles(titles));
+    }, []);
+
     // Fetch current user on load and listen for auth state change
     useEffect(() => {
         const checkUser = async () => {
@@ -64,6 +72,7 @@ export default function EditPage() {
             const { data, error } = await supabase.from('schedule').select('semester');
 
             if (error) {
+                setServerOffline(true);
                 console.error('Failed to fetch semesters:', error);
                 return;
             }
@@ -88,7 +97,6 @@ export default function EditPage() {
 
     // Fetch events when semester changes
     const fetchEvents = async (semesterId) => {
-
         try {
             const eventsData = await getSemester(semesterId);
             setEvents(eventsData);
@@ -112,6 +120,7 @@ export default function EditPage() {
     // Format Calender content
     const renderEventContent = (eventInfo) => {
         const { timeText, event } = eventInfo;
+        const [startTime, endTime] = timeText.split("-").map(t => t.trim());
         if (!event) return null;
 
         const { id, title, extendedProps } = event;
@@ -129,8 +138,15 @@ export default function EditPage() {
                 setShowForm(false);
             }
         };
+
         const handleEdit = () => {
-            setSelectedEvent(event);
+            setSelectedEvent({
+                title: event.title,
+                startTime,
+                endTime,
+                extendedProps: event.extendedProps,
+                id: event.id
+            });
             setShowForm(true);
         };
         const tooltipText = `${title}\n${timeText}\nRoom: ${room || ''}\nProf. ${professor || ''}\nSemester: ${currentSemester || ''}\n${rescheduled ? ' (Rescheduled)' : ''}`;
@@ -195,12 +211,13 @@ export default function EditPage() {
     };
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col min-h-full">
             {/* if no data, disable entire page */}
             {events.length === 0 || serverOffline ? (
                 <Loader message={serverOffline ? 'Server offline. Trying to reconnect...' : "Loading schedule..."} />
             ) : (
                 <>
+
                     <EventToolbar user={user}
                         showForm={showForm}
                         setShowForm={setShowForm}
@@ -218,10 +235,16 @@ export default function EditPage() {
                                     }
                                 }}
                             >
-                                <EventForm onSave={handleEventSaved} semester={currentSemester} existingEvent={selectedEvent} />
+                                <EventForm onSave={handleEventSaved}
+                                    semester={currentSemester}
+                                    existingEvent={selectedEvent}
+                                    availableTitles={availableTitles}
+
+                                />
                             </div>
                         )}
                         <div className="flex-grow h-[calc(100vh-60px)] overflow-hidden">
+
                             <FullCalendar
                                 plugins={[timeGridPlugin, interactionPlugin]}
                                 initialDate={mondayInitialDate}
@@ -245,6 +268,11 @@ export default function EditPage() {
                                     await handleEventDrop(info);
                                     fetchEvents(currentSemester);
                                 }}
+                                eventTimeFormat={{
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false  // Forces 24-hour format
+                                }}
                                 eventMinHeight={30}
                                 headerToolbar={{
                                     left: '',
@@ -253,12 +281,25 @@ export default function EditPage() {
                                 }}
                                 customButtons={{
                                     currentsemesterbutton: {
-                                        text: `(Semester ${currentSemester})`,
+                                        text: `[Semester ${currentSemester}]`,
                                         click: () => { },
                                     },
                                 }}
                             />
                         </div>
+                        <div className="flex items-start gap-4 bg-gray-100
+                         p-7 rounded-md border border-gray-200 shadow-sm">
+                            <TriangleAlert size={36}
+                                className="text-green-700 mt-1" />
+
+                            <p className="text-[13px] text-gray-700 leading-relaxed">
+                                <strong className="font-bold text-gray-900">Instructions:</strong> To edit an event, click the ✏️ icon on it. To delete, click the ❌ icon.
+                                To reschedule, drag and drop the event to a new <strong>time and/or day </strong> slot. After dragging, confirm the reschedule action in the prompt. <br />
+                                Rescheduled events are highlighted in yellow. To reset all rescheduled events, use the <em>"Reset Rescheduled"</em> button above.
+                            </p>
+                        </div>
+
+
                     </div>
                 </>
             )}

@@ -1,7 +1,5 @@
 'use client'
 
-import AuthButton from "./authButton";
-
 export default function EventToolbar({ user, showForm, setShowForm, handleResetRescheduled, semesters, currentSemester, handleManualSemesterChange }) {
     const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 

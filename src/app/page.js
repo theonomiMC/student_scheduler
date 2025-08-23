@@ -14,8 +14,9 @@ import './globals.css';
 export default function HomePage() {
   const [eventsByDay, setEventsByDay] = useState({});
   const [serverOffline, setServerOffline] = useState(false);
-  const currentSlot = useCurrentTimeSlot();
   
+  const currentSlot = useCurrentTimeSlot();
+// Function to group events by day of the week
   const groupEventsByDay = (data) => {
     const eventsByDay = {};
     data.forEach(ev => {

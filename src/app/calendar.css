@@ -178,11 +178,19 @@
 .fc .fc-toolbar-title {
     font-size: 1.1em !important;
     font-weight: 500;
-    margin-bottom: 8px;
-    color: #6b7280 !important;
+    margin: 0;
+  
 }
-
-@media (max-width: 767px) {
+.fc-direction-ltr .fc-toolbar > * > :not(:first-child) {
+    margin-left: 0 !important;
+    
+}
+.fc .fc-toolbar-title,.fc-direction-ltr .fc-toolbar > * > :not(:first-child){
+    color: #16317a !important;
+    font-weight:600 !important;
+    font-family: monserrate !important;
+}
+@media (max-width: 767px) {s
     .calendar-container {
         padding: 10px;
         margin: 10px auto;
@@ -269,7 +277,7 @@
     background-color: transparent !important;
     color: #111827 !important;
     font-weight: 500 !important;
-    font-size: 1rem !important;
+    font-size: 1.1em !important;
     cursor: default !important;
 }
 
@@ -339,6 +347,5 @@
     overflow-wrap: break-word;
    
 }
-
 
 

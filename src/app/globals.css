@@ -7,12 +7,18 @@
 }
 
 html,
-body {
+body, #root {
   margin: 0;
-  padding: 0;
-  
+  padding: 0;  
+}
+html, body {
+  overflow: auto;
+  scrollbar-width: none;
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
 
 body {
   color: var(--foreground);

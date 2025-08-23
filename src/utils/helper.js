@@ -112,7 +112,111 @@ export const sanitizer = (val) => {
   if (typeof val === 'number') {
     return val;
   }
-console.log(titleCasedVal)
+  console.log(titleCasedVal)
   // Return null for any other unexpected data types.
   return null;
+}
+export const tableScroller = (scrollRef) => {
+
+  const el = scrollRef.current;
+  if (!el) return;
+
+  let animationFrameId;
+  let timeoutId;
+  const scrollSpeed = 0.5;
+  const pauseDuration = 2000;
+  let isPaused = true;
+  let lastTimestamp = performance.now();
+  let scrollRemainder = 0;
+
+  const fadeOut = () => {
+    el.style.transition = "opacity 0.2s linear";
+    el.style.opacity = "0.3";
+  };
+
+  const fadeIn = () => {
+    el.style.transition = "opacity 0.2s linear";
+    el.style.opacity = "1";
+  };
+
+  const scrollStep = (timestamp) => {
+    const deltaTime = timestamp - lastTimestamp;
+    lastTimestamp = timestamp;
+    if (!el) return;
+
+    if (!isPaused) {
+      const pixelChange = scrollSpeed * (deltaTime / 16);
+      scrollRemainder += pixelChange;
+
+      if (scrollRemainder >= 1) {
+        const moveBy = Math.floor(scrollRemainder);
+        scrollRemainder -= moveBy;
+        // ifwe want to scrollup instead of down
+        // if (isScrollingDown) {
+        //                         el.scrollTop += moveBy;
+        //                         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
+        //                             isPaused = true;
+        //                             timeoutId = setTimeout(() => {
+        //                                 isScrollingDown = false;
+        //                                 isPaused = false;
+        //                                 lastTimestamp = performance.now();
+        //                                 requestAnimationFrame(scrollStep);
+        //                             }, pauseDuration);
+        //                             return;
+        //                         }
+        //                     } else {
+        //                         el.scrollTop -= moveBy;
+        //                         if (el.scrollTop <= 0) {
+        //                             isPaused = true;
+        //                             timeoutId = setTimeout(() => {
+        //                                 isScrollingDown = true;
+        //                                 isPaused = false;
+        //                                 lastTimestamp = performance.now();
+        //                                 requestAnimationFrame(scrollStep);
+        //                             }, pauseDuration);
+        //                             return;
+        //                         }
+        //                     }
+        el.scrollTop += moveBy;
+
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
+          isPaused = true;
+          timeoutId = setTimeout(() => {
+            fadeOut();
+            setTimeout(() => {
+              el.scrollTop = 0; // jump
+              fadeIn();
+              setTimeout(() => {
+                isPaused = false;
+                lastTimestamp = performance.now();
+                requestAnimationFrame(scrollStep);
+              }, pauseDuration);
+            }, 250); // quick fade-out
+          }, pauseDuration);
+          return;
+        }
+
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(scrollStep);
+  };
+
+  // initial start after pause
+  timeoutId = setTimeout(() => {
+    isPaused = false;
+    lastTimestamp = performance.now();
+    requestAnimationFrame(scrollStep);
+  }, pauseDuration);
+
+  return () => {
+    cancelAnimationFrame(animationFrameId);
+    clearTimeout(timeoutId);
+  };
+
+}
+export const normalizeTime = (t) => {
+  if (!t) return "";
+  let [h, m] = t.split(":");
+  return `${h.padStart(2, "0")}:${m}`;
 }

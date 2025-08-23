@@ -1,84 +1,16 @@
 'use client';
 import React, { useRef, useEffect } from 'react';
 import { times, days } from '@/utils/constants';
-import { getCurrentWeekRange } from '@/utils/helper';
+import { getCurrentWeekRange, tableScroller } from '@/utils/helper';
 
 export default function ScheduleTable({ eventsByDay, currentSlot }) {
     const scrollRef = useRef(null);
-    
+
     // Auto-scroll effect
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animationFrameId;
-    let timeoutId;
-    const scrollSpeed = 0.5;      // pixels per frame
-    const pauseDuration = 2000;   // pause before jump and after jump
-    let isPaused = true;
-    let lastTimestamp = performance.now();
-    let scrollRemainder = 0;
-
-    const fadeOut = () => {
-    el.style.transition = "opacity 0.2s linear";
-    el.style.opacity = "0.7"; // not fully invisible
-};
-
-const fadeIn = () => {
-    el.style.transition = "opacity 0.2s linear";
-    el.style.opacity = "1";
-};
-
-    const scrollStep = (timestamp) => {
-        const deltaTime = timestamp - lastTimestamp;
-        lastTimestamp = timestamp;
-        if (!el) return;
-
-        if (!isPaused) {
-            const pixelChange = scrollSpeed * (deltaTime / 16);
-            scrollRemainder += pixelChange;
-
-            if (scrollRemainder >= 1) {
-                const moveBy = Math.floor(scrollRemainder);
-                scrollRemainder -= moveBy;
-
-                el.scrollTop += moveBy;
-
-                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) {
-    isPaused = true;
-    timeoutId = setTimeout(() => {
-        fadeOut();
-        setTimeout(() => {
-            el.scrollTop = 0; // jump
-            fadeIn();
-            setTimeout(() => {
-                isPaused = false;
-                lastTimestamp = performance.now();
-                requestAnimationFrame(scrollStep);
-            }, pauseDuration);
-        }, 250); // quick fade-out
-    }, pauseDuration);
-    return;
-}
-
-            }
-        }
-
-        animationFrameId = requestAnimationFrame(scrollStep);
-    };
-
-    // initial start after pause
-    timeoutId = setTimeout(() => {
-        isPaused = false;
-        lastTimestamp = performance.now();
-        requestAnimationFrame(scrollStep);
-    }, pauseDuration);
-
-    return () => {
-        cancelAnimationFrame(animationFrameId);
-        clearTimeout(timeoutId);
-    };
-}, [Object.keys(eventsByDay).length]);
+    useEffect(() => {
+        const cleanup = tableScroller(scrollRef);
+        return cleanup;
+    }, [Object.keys(eventsByDay).length]);
 
 
     const groupOverlappingEvents = (events) => {

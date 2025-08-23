@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { getIsoStringForWeekday } from '@/utils/helper';
 
+// Fetch all data from the schedule table
 export async function getAllData(num) {
   const { data, error } = await supabase.from('schedule').select('*');
 
@@ -24,6 +25,33 @@ export async function getAllData(num) {
   }));
 }
 
+// Fetch distinct from the schedule table
+export const getAvailableRooms = async (day, startTime, endTime) => {
+  const { data, error } = await supabase.rpc('get_available_rooms',
+    {
+      _day: day,
+      _start_time: startTime,
+      _end_time: endTime
+    });
+  if (error) {
+    console.error('Error fetching available rooms:', error.message);
+    return [];
+  }
+  return data;
+}
+
+// Fetch distinct titles from the schedule table
+export const fetchTitles = async () => {
+  const { data, error } = await supabase
+    .from('schedule')
+    .select('title', { distinct: true });
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+  return data.map(item => item.title);
+}
+
+// Fetch semester from the schedule table
 export async function getSemester(num) {
   const { data, error } = await supabase.from('schedule').select('*').eq('semester', num);
 
@@ -46,6 +74,7 @@ export async function getSemester(num) {
     }
   }));
 }
+// Fetch all semesters and group events by semester
 export async function getAllSemesters() {
   const { data, error } = await supabase.from('schedule').select('*');
 
