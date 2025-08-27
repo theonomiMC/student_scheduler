@@ -14,16 +14,19 @@ import './globals.css';
 export default function HomePage() {
   const [eventsByDay, setEventsByDay] = useState({});
   const [serverOffline, setServerOffline] = useState(false);
-  
+
   const currentSlot = useCurrentTimeSlot();
-// Function to group events by day of the week
+  // Function to group events by day of the week
   const groupEventsByDay = (data) => {
     const eventsByDay = {};
     data.forEach(ev => {
       const startDate = new Date(ev.start);
       const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][startDate.getDay()].slice(0, 3);
+
       if (!eventsByDay[day]) eventsByDay[day] = [];
       eventsByDay[day].push(ev);
+      eventsByDay[day].sort((a, b)=>a.title.localeCompare(b.title))
+  
     });
 
     return eventsByDay;
@@ -33,6 +36,7 @@ export default function HomePage() {
     try {
       const grouped = await getAllData();
       const byDay = groupEventsByDay(grouped);
+
       setEventsByDay(byDay);
       setServerOffline(false);
     } catch (err) {

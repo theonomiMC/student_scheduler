@@ -24,9 +24,20 @@ export async function getAllData(num) {
     }
   }));
 }
-
+// Fetch all distinct rooms from the rooms table
+export async function getAllRooms () {
+  const { data, error } = await supabase
+    .from('rooms')
+    .select('name');
+  if (error) {
+    console.error('Error fetching rooms:', error.message);
+    return [];
+  }
+  return data.map(item => item.name);
+}
+// Fetch all rooms from the rooms table
 // Fetch distinct from the schedule table
-export const getAvailableRooms = async (day, startTime, endTime) => {
+export const getAvailableRooms = async (day=1, startTime, endTime) => {
   const { data, error } = await supabase.rpc('get_available_rooms',
     {
       _day: day,
@@ -154,6 +165,19 @@ export async function insertEvent(newEvent) {
   }
 
   console.log('Event inserted successfully');
+  return { data };
+}
+export async function insertRoom(newRoom){
+  const { data, error } = await supabase
+    .from('rooms')
+    .insert([newRoom]);
+
+  if (error) {
+    console.error('Insert error:', error.message);
+    return { error };
+  }
+
+  console.log('Room inserted successfully');
   return { data };
 }
 
