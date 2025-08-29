@@ -25,7 +25,7 @@ export async function getAllData(num) {
   }));
 }
 // Fetch all distinct rooms from the rooms table
-export async function getAllRooms () {
+export async function getAllRooms() {
   const { data, error } = await supabase
     .from('rooms')
     .select('name');
@@ -37,7 +37,7 @@ export async function getAllRooms () {
 }
 // Fetch all rooms from the rooms table
 // Fetch distinct from the schedule table
-export const getAvailableRooms = async (day=1, startTime, endTime) => {
+export const getAvailableRooms = async (day = 1, startTime, endTime) => {
   const { data, error } = await supabase.rpc('get_available_rooms',
     {
       _day: day,
@@ -149,8 +149,6 @@ export const handleEventDrop = async (info) => {
     console.error('Update failed:', error.message);
     info.revert();
     alert('Failed to update schedule.');
-  } else {
-    console.log('Updated successful');
   }
 };
 
@@ -164,10 +162,10 @@ export async function insertEvent(newEvent) {
     return { error };
   }
 
-  console.log('Event inserted successfully');
   return { data };
 }
-export async function insertRoom(newRoom){
+// Insert new room into the rooms table
+export async function insertRoom(newRoom) {
   const { data, error } = await supabase
     .from('rooms')
     .insert([newRoom]);
@@ -177,10 +175,42 @@ export async function insertRoom(newRoom){
     return { error };
   }
 
-  console.log('Room inserted successfully');
+
   return { data };
 }
+export async function deleteRoom(name) {
+  // First, set room to null in schedule table where room matches
+  const { updateError1 } = await supabase
+    .from('schedule')
+    .update({ room: null })
+    .eq('room', name);
 
+  if (updateError1) {
+    console.error('Update error:', updateError.message);
+    return { error: updateError1 };
+  }
+  const { updateError2 } = await supabase
+    .from('schedule')
+    .update({ rs_room: null })
+    .eq('rs_room', name); 
+  if (updateError2) {
+    console.error('Update error:', updateError2.message);
+    return { error: updateError2 };
+  }
+  // Then, delete the room from rooms table
+  const { data, error } = await supabase
+    .from('rooms')
+    .delete()
+    .eq('name', name);
+
+  if (error) {
+    console.error('Delete error:', error.message);
+    return { error };
+  }
+
+  return { data };
+}
+// Reset all rescheduled events to their original times
 export async function resetRescheduledEvents() {
   const { data: events, error: fetchError } = await supabase
     .from('schedule')
@@ -211,7 +241,6 @@ export async function resetRescheduledEvents() {
     }
   }
 
-  console.log('Rescheduled events reset.');
   return { success: true };
 }
 
@@ -228,7 +257,6 @@ export async function deleteEvent(id) {
     return { error };
   }
 
-  console.log('Event deleted!', data);
   return { data };
 }
 export async function updateEvent(id, updates) {

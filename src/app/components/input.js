@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getAllRooms, getAvailableRooms, insertEvent, insertRoom, updateEvent } from "../api/semester/route";
+import { deleteRoom, getAllRooms, getAvailableRooms, insertEvent, insertRoom, updateEvent } from "../api/semester/route";
 import { sanitizer, normalizeTime } from "@/utils/helper";
 import {
     Combobox,
@@ -8,6 +8,7 @@ import {
     ComboboxOptions,
     ComboboxOption,
 } from "@headlessui/react";
+import { Trash2 } from 'lucide-react';
 
 export default function EventForm({ onSave,
     existingEvent,
@@ -46,9 +47,7 @@ export default function EventForm({ onSave,
                     formData.startTime,
                     formData.endTime
                 );
-                console.log("Fetched Rooms:", data);
-                const rooms = data.map(r => r.room).filter(r => r && r.trim().length > 0);
-                console.log("Fetched Rooms:", rooms);
+                const rooms = data.map(r => r.room).filter(r => r && r.trim().length > 0 && r !== "Aladashvili Clinic");
                 setAvailableRooms(rooms);
             }
         };
@@ -56,7 +55,32 @@ export default function EventForm({ onSave,
         fetchRooms();
     }, [formData.day_of_week, formData.startTime, formData.endTime]);
 
+    const handleDeleteRoom = async (room) => {
+        const confirm = window.confirm(`Are you sure you want to delete the room "${room}"?`);
+        if (!confirm) return;
+        console.log("Deleting room:", room);
+        const { error } = await deleteRoom(room);
+        if (error) {
+            console.log("Error deleting room:", error.message);
+            return;
+        }
+        const updatedRooms = await getAllRooms();
+        setAllRooms(updatedRooms);
+        // 🔁 Refresh available rooms
+        if (formData.day_of_week && formData.startTime && formData.endTime) {
+            const data = await getAvailableRooms(
+                formData.day_of_week,
+                formData.startTime,
+                formData.endTime
+            );
 
+            const filtered = data
+                .map(r => r.room || r.name)
+                .filter(r => r && r.trim().length > 0 && r !== "Aladashvili Clinic");
+
+            setAvailableRooms(filtered);
+        }
+    }
     useEffect(() => {
         if (existingEvent) {
             const updatedFormData = {
@@ -83,8 +107,8 @@ export default function EventForm({ onSave,
                         existingEvent.endTime
                     );
                     const rooms = data.map(r => r.name)
-                    .filter(r => r && r.trim().length > 0);
-                    
+                        .filter(r => r && r.trim().length > 0);
+
                     setAvailableRooms(rooms);
                 }
             };
@@ -296,48 +320,38 @@ export default function EventForm({ onSave,
                     )}
                 </div>
             </Combobox>
-            {/* </div> */}
-            {/* <div className="col-span-2">
-                <Combobox value={formData.room} onChange={(val) => setFormData((p) => ({ ...p, room: val }))}>
-                    <div className="relative">
-                        <ComboboxInput
-                            className="input w-full"
-                            placeholder="Room"
-                            onFocus={() => setRoomQuery("")}
-                            onChange={(e) => {
-                                setRoomQuery(e.target.value);
-                                setFormData((prev) => ({ ...prev, room: e.target.value }));
-                            }}
-                            value={formData?.room}
-                        />
-                        {filteredRooms.length > 0 && (
-                            <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 shadow-lg">
-                                {filteredRooms.map((room, idx) => (
-                                    <ComboboxOption
+            {/* LIST OF AVAILABLE ROOMS */}
 
-                                        key={idx}
-                                        value={room}
-                                        className={({ active }) =>
-                                            `cursor-pointer select-none py-2 px-4 ${active ? "bg-blue-600 text-white" : "text-gray-900"}`
-                                        }
-                                    >
-                                        {room}
-                                    </ComboboxOption>
-                                ))}
-                            </ComboboxOptions>
-                        )}
-                    </div>
-                </Combobox>
-            </div> */}
-
-            {
-                availableRooms?.length > 0 &&
+            {availableRooms?.length > 0 && (
                 <div className="col-span-2">
                     <p className="text-sm text-blue-700">
-                        <span className="font-semibold text-blue-800">Available: </span>
-                         {availableRooms.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase(), undefined, { numeric: true })).join(', ')}</p>
+                        <span className="font-semibold text-blue-800">თავისუფალია:</span>{' '}
+                        <span className="flex flex-wrap gap-2 mt-1">
+                            {availableRooms
+                                .sort((a, b) =>
+                                    a.toLowerCase().localeCompare(b.toLowerCase(), undefined, { numeric: true })
+                                )
+                                .map((room, index) => (
+                                    <span
+                                        key={index}
+                                        className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm"
+                                    >
+                                        {room}
+                                        <button
+                                            onClick={() => handleDeleteRoom(room)}
+                                            className="hover:text-red-600 transition-colors"
+                                            aria-label={`Delete ${room}`}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </span>
+                                ))}
+                        </span>
+                    </p>
                 </div>
-            }
+            )}
+
+            {/* ADD PROFESSOR */}
             <input type="text" name="professor" placeholder="Professor" value={formData.professor} onChange={handleChange} className="input" />
             <select name="semester" value={formData.semester} onChange={handleChange} className="input">
                 {[1, 2, 3, 4, 5, 6].map((s) => {
@@ -385,9 +399,7 @@ export default function EventForm({ onSave,
 
                     Cancel
                 </button>
-
             </div>
-
         </form>
     );
 }

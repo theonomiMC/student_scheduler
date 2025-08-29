@@ -7,10 +7,10 @@ export default function ScheduleTable({ eventsByDay, currentSlot }) {
     const scrollRef = useRef(null);
 
     // Auto-scroll effect
-    // useEffect(() => {
-    //     const cleanup = tableScroller(scrollRef);
-    //     return cleanup;
-    // }, [Object.keys(eventsByDay).length]);
+    useEffect(() => {
+        const cleanup = tableScroller(scrollRef);
+        return cleanup;
+    }, [Object.keys(eventsByDay).length]);
 
 
     const groupOverlappingEvents = (events) => {
