@@ -47,7 +47,7 @@ export default function EventForm({ onSave,
                     formData.startTime,
                     formData.endTime
                 );
-                const rooms = data.map(r => r.room).filter(r => r && r.trim().length > 0 && r !== "Aladashvili Clinic");
+                const rooms = data.map(r => r.room).filter(r => r && r.trim().length > 0);
                 setAvailableRooms(rooms);
             }
         };
@@ -56,7 +56,7 @@ export default function EventForm({ onSave,
     }, [formData.day_of_week, formData.startTime, formData.endTime]);
 
     const handleDeleteRoom = async (room) => {
-        const confirm = window.confirm(`Are you sure you want to delete the room "${room}"?`);
+        const confirm = window.confirm(`Want to delete the room "${room}"?`);
         if (!confirm) return;
         console.log("Deleting room:", room);
         const { error } = await deleteRoom(room);
