@@ -10,5 +10,5 @@ jobs:
     steps:
       - name: Query Supabase
         run: |
-          curl -sf "${{ secrets.SUPABASE_URL }}/rest/v1/YOUR_TABLE?select=id&limit=1" \
+          curl -sf "${{ secrets.SUPABASE_URL }}/rest/v1/rooms?select=*&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
